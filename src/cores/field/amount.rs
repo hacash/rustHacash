@@ -7,7 +7,7 @@ static _BIG_MEI_DIP_UNIT: u8 = 248 - 8 - 8; // 232
 
 macro_rules! amount_check_data_len{
     ($self:expr, $tip:expr) => (
-        if $self.dist.abs() != $self.byte.len() as i8 {
+        if $self.dist.abs() as usize != $self.byte.len() {
             panic!("Amount.{}() dist abs is not match byte len.", $tip)
         }
     )
@@ -77,17 +77,33 @@ impl Field for Amount {
 ///////////////////////////////////////////////
 
 
-// new
+// new or from
 impl Amount {
+
+    pub fn new_coin(num: u8) -> Amount {
+        if num % 10 == 0 {
+            panic!("{} is not support.", num)
+        }
+        let amt = Amount{
+            unit: 248,
+            dist: 1,
+            byte: vec!(num),
+        };
+        amount_check_data_len!(amt, "new_coin");
+        amt
+    }
+
     pub fn new_small(num: i8, unit: u8) -> Amount {
         if num % 10 == 0 {
             panic!("{} is not support.", num)
         }
-        Amount{
+        let amt = Amount{
             unit,
             dist: match num < 0 { true => -1, false => 1 },
             byte: vec!(num.abs() as u8),
-        }
+        };
+        amount_check_data_len!(amt, "new_small");
+        amt
     }
 
     pub fn from_i64(mei: i64, unit: u8) -> Result<Amount, String> {
@@ -110,6 +126,7 @@ impl Amount {
         amt.dist = match sign == Minus { true => -dlen, false => dlen };
         // byte
         amt.byte = bigbts;
+        amount_check_data_len!(amt, "from_i64");
         // ok
         return Ok(amt);
     }
@@ -152,34 +169,6 @@ impl Amount {
         }
         
     }
-
-
-    pub fn to_mei_string_unsafe(&self) -> String {
-        // let mut amt = Amount::new();
-        if self.is_empty() {
-            return "0".to_string()
-        }
-        let chax = (248 - (self.unit as i32)).abs() as u32;
-        if chax > 8 + 8 {
-            return "0".to_string()
-        }
-        // num
-        let num = BigInt::from_bytes_be(Plus, &self.byte[..]).to_f64().unwrap();
-        // unit
-        let base = 10i32.pow(chax) as f64;
-        let resv = match self.unit > 248 {
-            true => num * base,
-            false => num / base,
-        };
-        // sign
-        let resv = resv.to_string();
-        let resv = resv.as_str();
-        match self.dist < 0 {
-            true => ("-".to_owned() + resv).to_string(),
-            false => resv.to_string(),
-        }
-    }
-
 
     pub fn from_fin_string(v: &String) -> Result<Amount, String> {
         let v = v.to_uppercase().replace("ㄜ", " ").replace("HAC", " ");
@@ -224,15 +213,194 @@ impl Amount {
         Ok(amt)
     }
 
+
+}
+
+
+// from / to bigint 
+impl Amount {
+
+    pub fn from_bigint( bignum: &BigInt ) -> Result<Amount, String> {
+        let numstr = bignum.to_string();
+        let numuse = numstr.as_str().trim_end_matches('0');
+        let unit = numstr.len() - numuse.len();
+        if unit > 255 {
+            return Err("Amount is too wide.".to_string())
+        }
+        let biguse = BigInt::from_str_radix(&numuse, 10).unwrap();
+        let (sign, byte) = biguse.to_bytes_be();
+        let dist = byte.len();
+        if dist > 127 {
+            return Err("Amount is too wide.".to_string())
+        }
+        let mut dist = dist as i8;
+        if sign == Minus {
+            dist *= -1;
+        }
+        // amt
+        let mut amt = Amount::new();
+        amt.unit = unit as u8;
+        amt.dist = dist;
+        amt.byte = byte;
+        // check
+        amount_check_data_len!(amt, "from_i64");
+        // ok
+        Ok(amt)
+    }
+
+    pub fn to_bigint(&self) -> BigInt {
+        if self.is_empty() {
+            return FromPrimitive::from_u64(0).unwrap();
+        }
+        let mut bignum = BigInt::from_bytes_be(Plus, &self.byte[..]);
+        bignum = match self.dist < 0 {
+            true => bignum * -1,
+            false => bignum,
+        };
+        let base: BigInt = FromPrimitive::from_u64(10).unwrap();
+        let powv = base.pow(self.unit as u32);
+        bignum * powv
+    }
+
+}
+
+// to string 
+impl Amount {
+
     pub fn to_fin_string(&self) -> String {
         ("ㄜ".to_owned() + self.to_string().as_str()).to_string()
     }
-
     pub fn to_string(&self) -> String {
+        let (s1, s2, s3) = self.to_strings();
+        format!("{}{}:{}", s1, s2, s3)
+        
+    }
+
+    pub fn to_strings(&self) -> (String, String, String) {
         let bignum = BigInt::from_bytes_be(Plus, &self.byte[..]);
+        let s1 = match self.dist < 0 {
+            true => "-".to_string(),
+            false => "".to_string(),
+        };
+        let s2 = bignum.to_string();
+        let s3 = format!("{}", self.unit);
+        (s1, s2, s3)
+    }
+
+    pub fn to_mei_string_unsafe(&self) -> String {
+        // let mut amt = Amount::new();
+        if self.is_empty() {
+            return "0".to_string()
+        }
+        let chax = (248 - (self.unit as i32)).abs() as u32;
+        if chax > 8 + 8 {
+            return "0".to_string()
+        }
+        // num
+        let num = BigInt::from_bytes_be(Plus, &self.byte[..]).to_f64().unwrap();
+        // unit
+        let base = 10i32.pow(chax) as f64;
+        let resv = match self.unit > 248 {
+            true => num * base,
+            false => num / base,
+        };
+        // sign
+        let resv = resv.to_string();
+        let resv = resv.as_str();
         match self.dist < 0 {
-            true => format!("-{}:{}", bignum.to_string(), self.unit),
-            false => format!("{}:{}", bignum.to_string(), self.unit),
+            true => ("-".to_owned() + resv).to_string(),
+            false => resv.to_string(),
+        }
+    }
+
+    pub fn to_mei_or_fin_string(&self, usemei: bool) -> String {
+        match usemei {
+            true => self.to_mei_string_unsafe(),
+            false => self.to_fin_string(),
+        }
+    }
+
+}
+
+// compute
+impl Amount {
+
+    pub fn add(&self, amt: &Amount) -> Result<Amount, String> {
+        let var1 = self.to_bigint();
+        let var2 = amt.to_bigint();
+        let varres = var1 + var2;
+        Amount::from_bigint(&varres)
+    }
+
+    pub fn sub(&self, amt: &Amount) -> Result<Amount, String> {
+        let var1 = self.to_bigint();
+        let var2 = amt.to_bigint();
+        let varres = var1 - var2;
+        Amount::from_bigint(&varres)
+    }
+
+    pub fn compress(&self, nummaxlen: usize, upper: bool) -> Result<Amount, String> {
+        let mut useamt = self.clone();
+        loop {
+            let (_, numstr, _) = useamt.to_strings();
+            if numstr.len() <= nummaxlen {
+                break; // ok
+            }
+            let mut nnn = numstr.parse::<u64>().unwrap();
+            nnn = nnn / 10;
+            let unit_n = useamt.unit as u64 + 1;
+            if unit_n > 255 {
+                return Err(format!("`{}` compress failed.", self.to_fin_string()));
+            }
+            useamt.unit = unit_n as u8;
+            if upper {
+                nnn += 1;
+            }
+            let big_n: BigInt = FromPrimitive::from_u64(nnn).unwrap();
+            (_, useamt.byte) = big_n.to_bytes_be();
+            // next
+        };
+        Ok(useamt)
+    }
+}
+
+// compare 
+impl Amount {
+
+    pub fn equal(&self, amt: &Amount) -> bool {
+        if self.byte == amt.byte 
+        && self.dist == amt.dist 
+        && self.unit == amt.unit {
+            return true
+        }
+        return false
+    }
+
+    pub fn not_equal(&self, amt: &Amount) -> bool {
+        return self.equal(amt) == false;
+    }
+
+    pub fn more_than(&self, amt: &Amount) -> bool {
+        if self.equal(amt) {
+            return false
+        }
+        let var1 = self.to_bigint();
+        let var2 = amt.to_bigint();
+        match var1.cmp( &var2 ) {
+            Greater => true,
+            _ => false,
+        }
+    }
+
+    pub fn less_than(&self, amt: &Amount) -> bool {
+        if self.equal(amt) {
+            return false
+        }
+        let var1 = self.to_bigint();
+        let var2 = amt.to_bigint();
+        match var1.cmp( &var2 ) {
+            Less => true,
+            _ => false,
         }
     }
 
@@ -242,6 +410,7 @@ impl Amount {
 
 // check
 impl Amount {
+
     pub fn is_empty(&self) -> bool {
         if self.unit == 0 {
             return true;
@@ -249,7 +418,34 @@ impl Amount {
         if self.dist == 0 {
             return true;
         }
-        // amount_check_data_len!(self, "is_empty");
         return false;
     }
+    pub fn is_not_empty(&self) -> bool {
+        return self.is_empty() == false;
+    }
+
+    // check must be negative and cannot be zero
+    pub fn is_positive(&self) -> bool {
+        if self.unit == 0 {
+            return false
+        }
+        if self.dist >= 0 {
+            return false
+        }
+        // yes
+        return true
+    }   
+
+    // check must be negative and cannot be zero
+    pub fn is_negative(&self) -> bool {
+        if self.unit == 0 {
+            return false
+        }
+        if self.dist >= 0 {
+            return false
+        }
+        // yes
+        return true
+    }
+
 }
