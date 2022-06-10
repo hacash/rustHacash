@@ -1,0 +1,36 @@
+
+## linux 
+gcc -fPIC -shared src/x16rs/x16rs.c -o src/x16rs/libx16rs.so
+
+rustc src/x16rs/test.rs -l x16rs -L ./src/x16rs
+env LD_LIBRARY_PATH=./src/x16rs ./test
+
+
+
+
+# cargo build --release --target=x86_64-unknown-linux-musl
+# ldd target/x86_64-unknown-linux-musl/release/hacash
+#
+#
+#
+
+# Windows
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+# /usr/local/musl/bin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

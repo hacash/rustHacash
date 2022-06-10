@@ -10,3 +10,10 @@ Cargo.lock
 **/*.rs.bk
 
 .vscode/
+
+
+*.out
+*.loc.h
+*.loc.c
+*.exe
+*.so
