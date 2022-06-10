@@ -27,13 +27,6 @@ impl Amount {
             byte: Vec::new(),
         }
     }
-    pub fn clone(&self) -> Amount {
-        Amount{
-            unit: self.unit,
-            dist: self.dist,
-            byte: self.byte.clone(),
-        }
-    }
     // parse function
     pub_fn_parse_wrap_return!(Amount, {Amount::new()});
 
@@ -47,6 +40,19 @@ impl fmt::Debug for Amount {
     }
 
 }
+
+
+impl Clone for Amount {
+    fn clone(&self) -> Amount {
+        Amount{
+            unit: self.unit,
+            dist: self.dist,
+            byte: self.byte.clone(),
+        }
+    }
+}
+
+// impl Copy for Amount {}
 
 impl Field for Amount {
 
@@ -73,9 +79,6 @@ impl Field for Amount {
     }
 
 } 
-
-///////////////////////////////////////////////
-
 
 // new or from
 impl Amount {
@@ -215,7 +218,6 @@ impl Amount {
 
 
 }
-
 
 // from / to bigint 
 impl Amount {
@@ -405,8 +407,6 @@ impl Amount {
     }
 
 }
-
-
 
 // check
 impl Amount {

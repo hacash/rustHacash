@@ -1,4 +1,4 @@
-
+use base58check::ToBase58Check;
 
 pub const ADDRESS_SIZE: usize = 21;
 
@@ -6,17 +6,24 @@ pub struct Address {
     addr: [u8; ADDRESS_SIZE],
 }
 
+
+
 impl Address {
-    pub fn new(a: [u8; ADDRESS_SIZE]) -> Address {
+    pub fn from(a: [u8; ADDRESS_SIZE]) -> Address {
         Address{addr: a}
     }
-    pub fn clone(&self) -> Address {
-        Address::new(self.addr.clone())
-    }
     // parse function
-    pub_fn_parse_wrap_return!(Address, {Address::new([0u8; ADDRESS_SIZE])});
+    pub_fn_parse_wrap_return!(Address, {Address::from([0u8; ADDRESS_SIZE])});
 
 }
+
+impl Clone for Address {
+    fn clone(&self) -> Address {
+        Address::from(self.addr.clone())
+    }
+}
+
+// impl Copy for Address {}
 
 impl Field for Address {
 
@@ -37,3 +44,11 @@ impl Field for Address {
 
 } 
 
+
+// format
+impl Address {
+    pub fn readable(&self) -> String {
+        let version = self.addr[0];
+        self.addr[1..].to_base58check(version)
+    }
+}
