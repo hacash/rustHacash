@@ -16,10 +16,11 @@ impl_Action_trait_for_common!( Action1HacTrs,
 
     // request_sign_addresses
     { vec![] },
-    
+
     // write_in_chain_state
-    {
-        println!("{}", "-------------- impl Action1HacTrs pub fn write_in_chain_state");
+    // _state &mut dyn ChainStateOperation -> Result<Option<Box<dyn ChainState>>, String>
+    _state, {
+        println!("{}", "---++++++++++----------- impl Action1HacTrs pub fn write_in_chain_state");
         Ok(None) // do nothing
     }
 

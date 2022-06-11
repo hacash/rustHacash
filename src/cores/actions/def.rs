@@ -1,2 +1,5 @@
-// action kind define
-pub const ACTION_KIND_1_HAC_TRS: u16 = 1;
+// action kind and parse func define
+actions_parse_func!(
+    ACTION_KIND_1_HAC_TRS, 1, Action1HacTrs
+);
+
