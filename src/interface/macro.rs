@@ -65,8 +65,11 @@ macro_rules! field_size_items_add_return{
 
 #[macro_export] 
 macro_rules! field_describe_items_wrap{
-    ($( $key: expr; $var: expr ),+) => ({
+    ($classid: expr; $( $key: expr, $var: expr ),+ ) => ({
         let mut list = Vec::new();
+        if $classid > 0 {
+            list.push( format!("\"{}\":{}", "clid", $classid) );
+        }
         $(
             list.push( format!("\"{}\":{}", $key, $var.describe()) );
         )*
@@ -79,7 +82,7 @@ macro_rules! field_describe_items_wrap{
 
 #[macro_export] 
 macro_rules! impl_Field_trait_for_common{
-    ($class: ident, $( $name: ident ),+) => (
+    ($cln: expr, $class: ident, $( $name: ident ),+) => (
 
 
 impl Field for $class {
@@ -97,7 +100,7 @@ impl Field for $class {
     }
 
     fn describe(&self) -> String {
-        field_describe_items_wrap!($( stringify!($name); self.$name ),*)
+        field_describe_items_wrap!( $cln; $( stringify!($name), self.$name ),*)
     }
 
 } 
@@ -249,7 +252,7 @@ impl $class {
 
 
 // impl Field for $class
-impl_Field_trait_for_common!($class, 
+impl_Field_trait_for_common!($kindid, $class, 
     $(
         $k
     ),*

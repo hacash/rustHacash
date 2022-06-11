@@ -21,7 +21,7 @@ impl SignCheckData {
 
 
 // impl Field for Sign
-impl_Field_trait_for_common!(SignCheckData, 
+impl_Field_trait_for_common!(0, SignCheckData, 
     signdata,
     stuffstr
 );

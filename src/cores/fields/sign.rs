@@ -21,7 +21,7 @@ impl Sign {
 
 
 // impl Field for Sign
-impl_Field_trait_for_common!(Sign, 
+impl_Field_trait_for_common!(0, Sign, 
     publickey,
     signature
 );

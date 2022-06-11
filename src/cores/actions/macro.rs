@@ -7,6 +7,7 @@ macro_rules! actions_kind_define_parse_func_include{
             pub const $kindid: u16 = $kindv;
         )+
 
+        // include mod files
         $(
             include!( stringify!($class.rs) );
         )+
