@@ -1,10 +1,14 @@
 
-macro_rules! actions_parse_func{
+macro_rules! actions_kind_define_parse_func_include{
     ( $( $kindid:ident, $kindv:tt, $class:ty ),+ ) => (
 
         // kind define
         $(
-        pub const $kindid: u16 = $kindv;
+            pub const $kindid: u16 = $kindv;
+        )+
+
+        $(
+            include!( stringify!($class.rs) );
         )+
 
         // parse func
