@@ -1,12 +1,14 @@
+
+
 use std::fmt;
 use std::cmp::Ordering::{Less,Greater};
 // use std::ops::{Add, Sub};
 
-use crate::interface::Field;
 use num_bigint::BigInt;
 use num_bigint::Sign::{Minus, Plus};
 use num_traits::{FromPrimitive, ToPrimitive, Num};
 
+use crate::interface::*;
 
 include!("./macro.rs");
 
@@ -14,7 +16,11 @@ include!("./fixedbytes.rs");
 include!("./varint.rs");
 include!("./stringtrim.rs");
 include!("./string.rs");
+include!("./message.rs");
 include!("./amount.rs");
 include!("./address.rs");
+include!("./hash.rs");
+include!("./height.rs");
+include!("./sign.rs");
 
 

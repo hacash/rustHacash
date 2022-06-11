@@ -27,8 +27,9 @@ impl Amount {
             byte: Vec::new(),
         }
     }
+
     // parse function
-    pub_fn_parse_wrap_return!(Amount, {Amount::new()});
+    pub_fn_field_parse_wrap_return!(Amount, {Amount::new()});
 
 }
 

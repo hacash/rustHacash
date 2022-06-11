@@ -5,7 +5,7 @@ macro_rules! create_fixedbytes_struct_and_impl{
 
         
 pub struct $name {
-    bytes: Vec<u8>,
+    bytes: [u8; $size],
 }
 
 impl Field for $name {
@@ -14,18 +14,18 @@ impl Field for $name {
         if $size != self.bytes.len() {
             panic!("{}.serialize size not match.", $tip)
         }
-        self.bytes.clone()
+        self.bytes.to_vec()
     }
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
         let seek2 = parse_move_seek_or_buf_too_short!($tip, seek, $size, buf);
         let sv = &buf[seek..seek2];
-        self.bytes = sv.to_vec();
+        self.bytes = sv.try_into().unwrap();
         Ok(seek2)
     }
 
     fn size(&self) -> usize {
-        $size
+        <$name>::size()
     }
 
 } 
@@ -33,11 +33,21 @@ impl Field for $name {
 
 impl $name {
 
-    pub fn to_vec(&self) -> Vec<u8> {
+    const fn size() -> usize {
+        $size
+    }
+
+    pub fn new() -> $name {
+        $name{
+            bytes: [0u8; $size],
+        }
+    }
+
+    pub fn value(&self) -> [u8; $size] {
         self.bytes.clone()
     }
-    
-    pub fn new( v: Vec<u8> ) -> $name {
+
+    pub fn from( v: [u8; $size] ) -> $name {
         $name{
             bytes: v,
         }
@@ -50,7 +60,7 @@ impl $name {
     }
 
     // parse function
-    pub_fn_parse_wrap_return!($name, {<$name>::new(Vec::new())});
+    pub_fn_field_parse_wrap_return!($name, {<$name>::from([0u8; $size])});
 
 }
 

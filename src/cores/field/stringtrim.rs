@@ -57,7 +57,7 @@ impl $name {
     }
 
     // parse function
-    pub_fn_parse_wrap_return!($name, {<$name>::new(&String::from(" "))});
+    pub_fn_field_parse_wrap_return!($name, {<$name>::new(&String::from(" "))});
 
 }
 

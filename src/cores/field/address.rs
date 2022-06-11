@@ -13,7 +13,7 @@ impl Address {
         Address{addr: a}
     }
     // parse function
-    pub_fn_parse_wrap_return!(Address, {Address::from([0u8; ADDRESS_SIZE])});
+    pub_fn_field_parse_wrap_return!(Address, {Address::from([0u8; ADDRESS_SIZE])});
 
 }
 

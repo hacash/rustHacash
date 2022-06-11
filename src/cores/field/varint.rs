@@ -43,7 +43,7 @@ impl Field for $name {
     }
 
     fn size(&self) -> usize {
-        $size
+        <$name>::size()
     }
 
 }
@@ -51,7 +51,17 @@ impl Field for $name {
 
 impl $name {
 
-    pub fn new(v: $vty) -> $name {
+    const fn size() -> usize {
+        $size
+    }
+
+    pub fn new() -> $name {
+        $name{
+            bytes: [0u8; $size],
+        }
+    }
+
+    pub fn from(v: $vty) -> $name {
         let bts = <$vty>::to_be_bytes(v);
         let drop_zore = $size_vl - $size;
         $name{
@@ -60,8 +70,15 @@ impl $name {
         }
     }
 
-    pub fn new_any(v: usize) -> $name {
-        <$name>::new( v as $vty)
+    pub fn from_u64(v: u64) -> $name {
+        <$name>::from(v as $vty)
+    }
+
+    pub fn from_string(strv: &String) -> Result<$name, String> {
+        match strv.parse::<u64>() {
+            Err(e) => Err(e.to_string()),
+            Ok(v) => Ok(<$name>::from(v as $vty)),
+        }
     }
 
     pub fn clone(&self) -> $name {
@@ -81,7 +98,7 @@ impl $name {
     }
 
     // parse function
-    pub_fn_parse_wrap_return!($name, {<$name>::new(0)});
+    pub_fn_field_parse_wrap_return!($name, {<$name>::new()});
 }
 
 

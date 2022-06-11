@@ -21,17 +21,3 @@ macro_rules! parse_move_seek_or_return_err{
         }
     })
 }
-
-
-macro_rules! pub_fn_parse_wrap_return{
-    ($name:ty, $newcall:expr) => (
-        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, $name), String> {
-            let mut v = $newcall;
-            let res = v.parse(buf, seek);
-            match res {
-                Ok(seek) => Ok((seek, v)),
-                Err(e) => return Err(e),
-            }
-        }
-    )
-}
