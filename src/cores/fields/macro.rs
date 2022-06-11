@@ -10,14 +10,3 @@ macro_rules! parse_move_seek_or_buf_too_short{
         }
     })
 }
-
-
-macro_rules! parse_move_seek_or_return_err{
-    ($tip:expr, $type:ty, $buf:expr, $seek:expr) => ({
-        let res = <$type>::parse($buf, $seek);
-        match res {
-            Err(e) => return Err(format!("{}.prase error: {}", $tip, e)),
-            Ok(res) => res,
-        }
-    })
-}

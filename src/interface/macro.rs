@@ -1,6 +1,18 @@
 
 
 #[macro_export] 
+macro_rules! parse_move_seek_or_return_err{
+    ($tip:expr, $type:ty, $buf:expr, $seek:expr) => ({
+        let res = <$type>::parse($buf, $seek);
+        match res {
+            Err(e) => return Err(format!("{}.prase error: {}", $tip, e)),
+            Ok(res) => res,
+        }
+    })
+}
+
+
+#[macro_export] 
 macro_rules! pub_fn_field_parse_wrap_return{
     ($name:ty, $newcall:expr) => (
         pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, $name), String> {
@@ -202,10 +214,12 @@ impl Field for $class {
 
 
 
+/*************** actions ****************/
+
 
 #[macro_export] 
 macro_rules! action_create_struct_for_common_items{
-    ($kindid:expr, $class: ident, $( $k: ident, $ty:ty),+) => (
+    ($kindid: expr, $class: ident, $( $k: ident, $ty:ty),+) => (
 
 pub struct $class {
     $(
@@ -224,18 +238,15 @@ impl $class {
         }
     }
 
+    const fn get_kind() -> u16 {
+        $kindid
+    }
+
     // parse function
     pub_fn_field_parse_wrap_return!($class, {$class::new()});
 
 }
 
-impl Action for $class {
-
-    fn kind(&self) -> u16 {
-        $kindid
-    }
-
-}
 
 // impl Field for $class
 impl_Field_trait_for_common!($class, 
@@ -253,8 +264,35 @@ impl_Field_trait_for_common!($class,
 
 
 
+#[macro_export] 
+macro_rules! impl_Action_trait_for_common{
+    ($class: ty, $codeblock1: block, $codeblock2: block, $codeblock3: block) => (
 
 
+
+impl Action for $class {
+
+    fn kind(&self) -> u16 {
+        <$class>::get_kind()
+    }
+
+    fn is_burning_90_persent_tx_fee(&self) -> bool {
+        $codeblock1
+    }
+
+    fn request_sign_addresses(&self) -> Vec<Address> {
+        $codeblock2
+    }
+
+	fn write_in_chain_state(&self, _state: &mut dyn ChainStateOperation) -> ActionStateWriteInReturnType {
+        $codeblock3
+    }
+
+
+}
+
+    )
+}
 
 
 
