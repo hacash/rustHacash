@@ -1,4 +1,5 @@
+use crate::cores::fields::*;
 
-include!("./field.macro.rs");
+include!("./macro.rs");
 include!("./field.rs");
 include!("./action.rs");

@@ -1,7 +1,7 @@
-use hacash::cores::field::Amount;
+use hacash::{cores::fields::*, interface::Field};
 
 /*
-    cargo test --test fields -- --nocapture
+    cargo test --test field -- --nocapture
 */
 
 #[test]
@@ -44,12 +44,27 @@ fn amount() {
     assert_eq!(258, sss.len());
 
 
-    println!("{}, {}", sss.len(), sss)
+    // println!("{}, {}", sss.len(), sss)
 
 
+    println!("{}", amt3.describe())
 
 
 
 }
 
+
+#[test]
+fn diamond() {
+
+    assert_eq!(false, DiamondName::is_diamond_name_string("".to_string()));
+    assert_eq!(false, DiamondName::is_diamond_name_string("AAA".to_string()));
+    assert_eq!(false, DiamondName::is_diamond_name_string("123456".to_string()));
+    assert_eq!(false, DiamondName::is_diamond_name_string("AAAAA1".to_string()));
+    assert_eq!(false, DiamondName::is_diamond_name_string("0BBBBB".to_string()));
+    assert_eq!(false, DiamondName::is_diamond_name_string("AAAAAa".to_string()));
+    assert_eq!(true, DiamondName::is_diamond_name_string("AAAAAA".to_string()));
+    assert_eq!(true, DiamondName::is_diamond_name_string("XYXYXY".to_string()));
+
+}
 

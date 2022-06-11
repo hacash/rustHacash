@@ -1,7 +1,7 @@
 
-type Hash = Fixedbytes32;
-type HashHalfChecker = Fixedbytes16;
-type HashNonceChecker = Fixedbytes8;
+pub type Hash = Fixedbytes32;
+pub type HashHalfChecker = Fixedbytes16;
+pub type HashNonceChecker = Fixedbytes8;
 
 const HASH_SIZE: usize = Hash::size();
 const HASH_HALF_CHECKER_SIZE: usize = HashHalfChecker::size();

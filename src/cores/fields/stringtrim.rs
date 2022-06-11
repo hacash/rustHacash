@@ -27,6 +27,10 @@ impl Field for $name {
     fn size(&self) -> usize {
         $size
     }
+    
+    fn describe(&self) -> String {
+        format!("\"{}\"", hex::encode(self.bytes))
+    }
 
 } 
 
@@ -39,7 +43,13 @@ impl $name {
         v.as_str().trim().to_string()
     }
     
-    pub fn new(stuff: &String) -> $name {
+    pub fn new() -> $name {
+        $name{
+            bytes: [0u8; $size],
+        }
+    }
+    
+    pub fn from(stuff: &String) -> $name {
         let bytes = stuff.clone().into_bytes();
         let lv = bytes.len();
         let mut resv = Vec::new();
@@ -57,7 +67,7 @@ impl $name {
     }
 
     // parse function
-    pub_fn_field_parse_wrap_return!($name, {<$name>::new(&String::from(" "))});
+    pub_fn_field_parse_wrap_return!($name, {<$name>::new()});
 
 }
 

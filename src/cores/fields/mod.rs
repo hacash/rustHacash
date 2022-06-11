@@ -1,5 +1,3 @@
-
-
 use std::fmt;
 use std::cmp::Ordering::{Less,Greater};
 // use std::ops::{Add, Sub};
@@ -14,6 +12,7 @@ include!("./macro.rs");
 
 include!("./fixedbytes.rs");
 include!("./varint.rs");
+include!("./bool.rs");
 include!("./stringtrim.rs");
 include!("./string.rs");
 include!("./message.rs");
@@ -22,5 +21,14 @@ include!("./address.rs");
 include!("./hash.rs");
 include!("./height.rs");
 include!("./sign.rs");
+include!("./signcheck.rs");
 
+include!("./satoshi.rs");
+include!("./optladdr.rs");
+
+include!("./channel.rs");
+include!("./lending.rs");
+include!("./lockbls.rs");
+include!("./diamond.rs");
+include!("./diamonds.rs");
 

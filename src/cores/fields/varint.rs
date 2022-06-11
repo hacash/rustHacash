@@ -46,8 +46,19 @@ impl Field for $name {
         <$name>::size()
     }
 
+    fn describe(&self) -> String {
+        format!("{}", self.value() as u64)
+    }
+
 }
 
+impl Clone for $name {
+    fn clone(&self) -> $name {
+        $name{
+            bytes: self.bytes.clone(),
+        }
+    }
+}
 
 impl $name {
 
@@ -78,12 +89,6 @@ impl $name {
         match strv.parse::<u64>() {
             Err(e) => Err(e.to_string()),
             Ok(v) => Ok(<$name>::from(v as $vty)),
-        }
-    }
-
-    pub fn clone(&self) -> $name {
-        $name{
-            bytes: self.bytes.clone(),
         }
     }
 

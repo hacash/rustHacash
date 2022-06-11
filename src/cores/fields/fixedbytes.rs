@@ -28,6 +28,10 @@ impl Field for $name {
         <$name>::size()
     }
 
+    fn describe(&self) -> String {
+        format!("\"{}\"", hex::encode(self.bytes))
+    }
+
 } 
 
 
@@ -45,6 +49,10 @@ impl $name {
 
     pub fn value(&self) -> [u8; $size] {
         self.bytes.clone()
+    }
+
+    pub fn to_string(&self) -> String {
+        String::from_utf8(self.bytes.to_vec()).unwrap()
     }
 
     pub fn from( v: [u8; $size] ) -> $name {

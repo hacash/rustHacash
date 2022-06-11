@@ -1,6 +1,6 @@
 use libsecp256k1::{ SecretKey, PublicKey, util };
 use rand::{self, RngCore};
-use super::field::{ Address, ADDRESS_SIZE };
+use super::fields::{ Address, ADDRESS_SIZE };
 use super::super::x16rs::{ sha2, ripemd160 };
 
 // static max_prikey_value: [u8; 32] = b"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140";

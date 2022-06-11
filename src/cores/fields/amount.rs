@@ -79,6 +79,10 @@ impl Field for Amount {
         1 + 1 + self.dist.abs() as usize
     }
 
+    fn describe(&self) -> String {
+        format!("\"{}\"", self.to_fin_string() )
+    }
+
 } 
 
 // new or from
