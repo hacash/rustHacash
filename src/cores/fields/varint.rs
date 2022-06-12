@@ -36,10 +36,10 @@ impl Field for $name {
     }
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
-        let seek = parse_move_seek_or_buf_too_short!($tip, seek, $size, buf);
-        self.bytes = buf[seek..seek + $size].try_into().unwrap();
-        self.bytes = self.bytes.clone(); // clone
-        Ok(seek)
+        let mvseek = parse_move_seek_or_buf_too_short!($tip, seek, $size, buf);
+        self.bytes = buf[seek..mvseek].try_into().unwrap();
+        // println!("{}  {}  {}  +=+++=+++===", seek, mvseek, self.bytes[0]);
+        Ok(mvseek)
     }
 
     fn size(&self) -> usize {
@@ -57,6 +57,19 @@ impl Clone for $name {
         $name{
             bytes: self.bytes.clone(),
         }
+    }
+}
+
+impl FieldNumber for $name {
+
+    fn get_value(&self) -> u64 {
+        self.value() as u64
+    }
+
+    fn set_value(&mut self, v: u64) {
+        let bts = <$vty>::to_be_bytes(v as $vty);
+        let drop_zore = $size_vl - $size;
+        self.bytes = bts[drop_zore..].try_into().unwrap();
     }
 }
 
@@ -112,12 +125,12 @@ impl $name {
 
 
 // create struct
-create_varint_struct_and_impl!("UInt1", Uint1,  u8, UINT1_SIZE, UINT1_SIZE_VL);
-create_varint_struct_and_impl!("UInt2", Uint2, u16, UINT2_SIZE, UINT2_SIZE_VL);
-create_varint_struct_and_impl!("UInt3", Uint3, u32, UINT3_SIZE, UINT3_SIZE_VL);
-create_varint_struct_and_impl!("UInt4", Uint4, u32, UINT4_SIZE, UINT4_SIZE_VL);
-create_varint_struct_and_impl!("UInt5", Uint5, u64, UINT5_SIZE, UINT5_SIZE_VL);
-create_varint_struct_and_impl!("UInt6", Uint6, u64, UINT6_SIZE, UINT6_SIZE_VL);
-create_varint_struct_and_impl!("UInt7", Uint7, u64, UINT7_SIZE, UINT7_SIZE_VL);
-create_varint_struct_and_impl!("UInt8", Uint8, u64, UINT8_SIZE, UINT8_SIZE_VL);
+create_varint_struct_and_impl!("Uint1", Uint1,  u8, UINT1_SIZE, UINT1_SIZE_VL);
+create_varint_struct_and_impl!("Uint2", Uint2, u16, UINT2_SIZE, UINT2_SIZE_VL);
+create_varint_struct_and_impl!("Uint3", Uint3, u32, UINT3_SIZE, UINT3_SIZE_VL);
+create_varint_struct_and_impl!("Uint4", Uint4, u32, UINT4_SIZE, UINT4_SIZE_VL);
+create_varint_struct_and_impl!("Uint5", Uint5, u64, UINT5_SIZE, UINT5_SIZE_VL);
+create_varint_struct_and_impl!("Uint6", Uint6, u64, UINT6_SIZE, UINT6_SIZE_VL);
+create_varint_struct_and_impl!("Uint7", Uint7, u64, UINT7_SIZE, UINT7_SIZE_VL);
+create_varint_struct_and_impl!("Uint8", Uint8, u64, UINT8_SIZE, UINT8_SIZE_VL);
 

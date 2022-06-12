@@ -1,6 +1,6 @@
 
 
-pub type ActionStateWriteInReturnType = Result<Option<Box<dyn ChainState>>, String>;
+pub type ActionStateWriteInReturnType = Option<String>;
 
 pub trait Action : Field {
 

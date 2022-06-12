@@ -26,6 +26,10 @@ pub fn x16rs_hash_wrap(loopnum: i32, indata: &[u8; 32]) -> [u8; 32] {
 }
 
 
+pub fn calculate_hash(stuff: impl AsRef<[u8]>) -> [u8; 32] {
+    sha3(stuff)
+}
+
 // sha3
 pub fn sha3(stuff: impl AsRef<[u8]>) -> [u8; 32] {
 

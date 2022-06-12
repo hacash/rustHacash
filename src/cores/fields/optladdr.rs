@@ -2,7 +2,7 @@
 // if have address
 pub struct OptionalAddress {
 	is_exist: Bool,
-	address: Address,
+	address: Option<Address>,
 }
 
 
@@ -11,7 +11,7 @@ impl OptionalAddress {
     pub fn new() -> OptionalAddress {
         OptionalAddress {
             is_exist: Bool::create(false),
-            address: Address::new(),
+            address: None,
         }
     }
 
@@ -24,7 +24,7 @@ impl OptionalAddress {
 // impl Field for OptionalAddress
 impl_Field_trait_if_exist!(OptionalAddress, 
     is_exist,
-    address
+    address, Address
 );
 
 

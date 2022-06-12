@@ -113,7 +113,7 @@ impl Field for $class {
 
 #[macro_export] 
 macro_rules! impl_Field_trait_if_exist{
-    ($class: ident, $mark: ident, $value: ident) => (
+    ($class: ident, $mark: ident, $value: ident, $value_type: ty) => (
 
 
 impl Field for $class {
@@ -121,7 +121,7 @@ impl Field for $class {
     fn serialize(&self) -> Vec<u8> {
         let mut resdt = self.$mark.serialize();
         if self.$mark.check() {
-            let mut vardt = self.$value.serialize();
+            let mut vardt = self.$value.as_ref().unwrap().serialize();
             resdt.append(&mut vardt);
         }
         resdt
@@ -129,26 +129,34 @@ impl Field for $class {
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
         let mut seek = self.$mark.parse(buf, seek) ? ;
+        println!("impl_Field_trait_if_exist -- {} {}", seek, self.$mark.check());
         if self.$mark.check() {
-            seek = self.$value.parse(buf, seek) ? ;
+            let (mvsk, var) = <$value_type>::parse(buf, seek) ? ;
+            self.$value = Some(var);
+            seek = mvsk
         }
+        println!("impl_Field_trait_if_exist end seek {}", seek);
         Ok(seek)
     }
 
     fn size(&self) -> usize {
         let mut size = self.$mark.size();
         if self.$mark.check() {
-            size += self.$value.size();
+            size += self.$value.as_ref().unwrap().size();
         }
         size
     }
 
     fn describe(&self) -> String {
+        let mut valstr = "null".to_string();
+        if let Some(v) = &self.$value {
+            valstr = v.describe()  
+        }
         format!("{{\"{}\":{},\"{}\":{}}}",
             stringify!($mark),
             self.$mark.describe(),
             stringify!($value),
-            self.$value.describe()
+            valstr
         )
     }
 
@@ -252,7 +260,7 @@ impl $class {
 
 
 // impl Field for $class
-impl_Field_trait_for_common!($kindid, $class, 
+impl_Field_trait_for_common!(0, $class, 
     $(
         $k
     ),*

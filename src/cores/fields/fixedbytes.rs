@@ -8,6 +8,14 @@ pub struct $name {
     bytes: [u8; $size],
 }
 
+impl Clone for $name {
+    fn clone(&self) -> $name {
+        $name{
+            bytes: self.bytes.clone(),
+        }
+    }
+}
+
 impl Field for $name {
 
     fn serialize(&self) -> Vec<u8> {

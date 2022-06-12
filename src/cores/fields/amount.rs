@@ -65,11 +65,12 @@ impl Field for Amount {
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
         let seek1 = parse_move_seek_or_buf_too_short!("Amount", seek, 1, buf);
-        self.unit = buf[seek1];
+        self.unit = buf[seek];
         let seek2 = parse_move_seek_or_buf_too_short!("Amount", seek1, 1, buf);
-        self.dist = buf[seek2] as i8;
+        self.dist = buf[seek1] as i8;
         let seek3 = parse_move_seek_or_buf_too_short!("Amount", seek2, self.dist.abs() as usize, buf);
         self.byte = buf[seek2..seek3].to_vec();
+        println!("amount.parse : {} {} {} {}", seek1, seek2, seek3, self.byte[0]);
         amount_check_data_len!(self, "parse");
         Ok(seek3)
     }
@@ -331,6 +332,17 @@ impl Amount {
 
 // compute
 impl Amount {
+
+    pub fn unit(&self) -> u8 {
+        self.unit
+    }
+
+    pub fn unit_sub(&mut self, v: u8) {
+        if v > self.unit {
+            panic!("cannot sub unit to negative number.");
+        }
+        self.unit -= v;
+    }
 
     pub fn add(&self, amt: &Amount) -> Result<Amount, String> {
         let var1 = self.to_bigint();

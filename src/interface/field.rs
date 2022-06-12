@@ -6,3 +6,7 @@ pub trait Field {
     fn describe(&self) -> String; // json value style
 }
 
+pub trait FieldNumber : Field {
+    fn get_value(&self) -> u64;
+    fn set_value(&mut self, _: u64);
+}

@@ -5,7 +5,7 @@ impl Satoshi {
     pub fn to_satoshi_variation(&self) -> SatoshiVariation {
         SatoshiVariation {
             is_exist: Bool::create(true),
-            value_sat: self.clone(),
+            value_sat: Some(self.clone()),
         }
     }
 
@@ -15,7 +15,7 @@ impl Satoshi {
 // if satoshi
 pub struct SatoshiVariation {
 	is_exist: Bool,
-	value_sat: Satoshi,
+	value_sat: Option<Satoshi>,
 }
 
 
@@ -24,7 +24,7 @@ impl SatoshiVariation {
     pub fn new() -> SatoshiVariation {
         SatoshiVariation {
             is_exist: Bool::create(false),
-            value_sat: Satoshi::new(),
+            value_sat: None,
         }
     }
 
@@ -37,7 +37,7 @@ impl SatoshiVariation {
 // impl Field for OptionalAddress
 impl_Field_trait_if_exist!(SatoshiVariation, 
     is_exist,
-    value_sat
+    value_sat, Satoshi
 );
 
 

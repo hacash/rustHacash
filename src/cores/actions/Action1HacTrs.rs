@@ -4,6 +4,7 @@
 action_create_struct_for_common_items!(
     ACTION_KIND_1_HAC_TRS,
     Action1HacTrs,
+    kind, Uint2,
 	to_address, Address,
 	amount, Amount
 );
@@ -21,7 +22,7 @@ impl_Action_trait_for_common!( Action1HacTrs,
     // _state &mut dyn ChainStateOperation -> Result<Option<Box<dyn ChainState>>, String>
     _state, {
         println!("{}", "---++++++++++----------- impl Action1HacTrs pub fn write_in_chain_state");
-        Ok(None) // do nothing
+        None // do nothing
     }
 
 );
