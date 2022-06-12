@@ -36,9 +36,20 @@ fn blocks() {
 
     let blockdata = hex::decode(blkdtstr).unwrap();
 
-    let (_, _block) = blocks::parse(&blockdata, 0).unwrap();
+    let (_, block) = blocks::parse(&blockdata, 0).unwrap();
 
-    println!("{}", _block.describe() )
+    let halfdata: Vec<u8> = blkdtstr[0..blkdtstr.len()/2].try_into().unwrap();
+    println!("\n\n{}\n\n", String::from_utf8(halfdata).unwrap() );
+
+    println!("{}\n\n", block.describe() );
+
+    let blkdtnewstr = hex::encode( block.serialize() );
+
+    assert_eq!( blkdtstr.to_string(), blkdtnewstr );
+
+
+
+
 
 
 }
