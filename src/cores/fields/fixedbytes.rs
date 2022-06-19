@@ -4,6 +4,7 @@ macro_rules! create_fixedbytes_struct_and_impl{
     ($tip:expr, $name:ident, $size:expr) => (
 
         
+#[derive(PartialEq)]
 pub struct $name {
     bytes: [u8; $size],
 }

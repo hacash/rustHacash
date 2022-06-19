@@ -38,7 +38,12 @@ impl Field for $name {
     }
     
     fn describe(&self) -> String {
-        format!("\"{}\"", hex::encode(&self.str))
+        let se = String::from_utf8(self.str.clone());
+        let sss = match se {
+            Err(_) => hex::encode(&self.str),
+            Ok(s) => s,
+        };
+        format!("\"{}\"", sss)
     }
 
 } 
@@ -73,12 +78,6 @@ impl $name {
         })
     }
 
-    pub fn clone(&self) -> $name {
-        $name{
-            len: self.len.clone(),
-            str: self.str.clone(),
-        }
-    }
 
     // parse function
     pub_fn_field_parse_wrap_return!($name, {<$name>::new()});
@@ -86,9 +85,19 @@ impl $name {
 }
 
 
+impl Clone for $name {
+    fn clone(&self) -> $name {
+        $name{
+            len: self.len.clone(),
+            str: self.str.clone(),
+        }
+    }
+}
 
     )
 }
+
+
 
 
 

@@ -19,11 +19,20 @@ impl Sign {
 
 }
 
+impl Clone for Sign {
+    fn clone(&self) -> Sign {
+        Sign{
+            publickey: self.publickey.clone(),
+            signature: self.signature.clone(),
+        }
+    }
+}
+
 
 // impl Field for Sign
 impl_Field_trait_for_common!(0, Sign, 
     publickey,
-    signature
+    signature,
 );
 
 

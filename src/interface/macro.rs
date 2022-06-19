@@ -82,7 +82,7 @@ macro_rules! field_describe_items_wrap{
 
 #[macro_export] 
 macro_rules! impl_Field_trait_for_common{
-    ($cln: expr, $class: ident, $( $name: ident ),+) => (
+    ($cln: expr, $class: ident, $( $name: ident, )+) => (
 
 
 impl Field for $class {
@@ -169,7 +169,7 @@ impl Field for $class {
 
 #[macro_export] 
 macro_rules! impl_Field_trait_for_list{
-    ($class: ident, $count_type: ident, $value_type: ident, $count: ident, $vec_list: ident) => (
+    ($class: ident, $count: ident, $count_type: ty, $vec_list: ident, $value_type: ty) => (
 
 
 impl Field for $class {
@@ -262,8 +262,8 @@ impl $class {
 // impl Field for $class
 impl_Field_trait_for_common!(0, $class, 
     $(
-        $k
-    ),*
+        $k,
+    )+
 );
 
 

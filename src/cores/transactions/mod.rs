@@ -1,5 +1,6 @@
 use crate::interface::*;
 use crate::cores::fields::*;
+use crate::cores::constitutes::*;
 use crate::cores::dynobjs::*;
 use crate::x16rs;
 

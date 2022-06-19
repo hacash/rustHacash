@@ -9,11 +9,11 @@ use hacash::chain::state::*;
 #[test]
 fn actions() {
 
-    fn print_field(act: &dyn Field) {
+    fn print_field(act: &impl Field) {
         println!("print_field: {}", act.describe());
     }
 
-    fn print_action(act: &dyn Action) {
+    fn print_action(act: &impl Action) {
         println!("print_action: {}", act.describe());
 
         let mut optr = StateOperate::new();

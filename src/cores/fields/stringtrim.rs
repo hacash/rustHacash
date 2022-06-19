@@ -29,7 +29,13 @@ impl Field for $name {
     }
     
     fn describe(&self) -> String {
-        format!("\"{}\"", hex::encode(self.bytes))
+        let se = String::from_utf8(self.bytes.clone().to_vec());
+        let sss = match se {
+            Err(_) => hex::encode(&self.bytes),
+            Ok(s) => s,
+        };
+        let sss = sss.as_str().trim_matches(' ').trim_matches('\0').to_string();
+        format!("\"{}\"", sss)
     }
 
 } 
@@ -71,6 +77,14 @@ impl $name {
 
 }
 
+
+impl Clone for $name {
+    fn clone(&self) -> $name {
+        $name{
+            bytes: self.bytes.clone(),
+        }
+    }
+}
 
 
     )

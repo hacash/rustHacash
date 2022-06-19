@@ -25,6 +25,7 @@ macro_rules! create_varint_struct_and_impl{
     ($tip:expr, $name:ident, $vty:ty, $size:expr, $size_vl:expr) => (
 
 
+#[derive(PartialEq)]
 pub struct $name {
     bytes: [u8; $size],
 }
@@ -102,6 +103,12 @@ impl $name {
         match strv.parse::<u64>() {
             Err(e) => Err(e.to_string()),
             Ok(v) => Ok(<$name>::from(v as $vty)),
+        }
+    }
+
+    pub const fn from_bytes(v: [u8; $size]) -> $name {
+        $name{
+            bytes: v,
         }
     }
 

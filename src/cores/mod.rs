@@ -4,6 +4,9 @@ pub mod account;
 pub mod fields;
 
 #[macro_use]
+pub mod constitutes;
+
+#[macro_use]
 pub mod dynobjs;
 
 #[macro_use]
@@ -14,3 +17,11 @@ pub mod transactions;
 
 #[macro_use]
 pub mod blocks;
+
+#[macro_use]
+pub mod storeitems;
+
+
+
+
+

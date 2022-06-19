@@ -30,7 +30,7 @@ impl_Field_trait_for_common!( 0, TransactionCoinbase,
     address,
     reward, 
     message,
-    extend
+    extend,
 );
 
 impl TransactionReadOnly for TransactionCoinbase {

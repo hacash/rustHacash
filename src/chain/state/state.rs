@@ -14,7 +14,7 @@ impl ChainStatus {
 
 
 
-impl ChainState for ChainStatus {
+// impl ChainState for ChainStatus {
 
     
-}
+// }

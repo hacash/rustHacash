@@ -8,6 +8,7 @@ impl DiamondName {
         self.to_string()
     }
 
+    #[allow(dead_code)]
     fn describe(&self) -> String {
         format!("\"{}\"", self.name())
     }

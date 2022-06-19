@@ -55,7 +55,7 @@ impl_Field_trait_for_common!( 0, $class,
     fee,
     actions,
     signs,
-    multisign_mark
+    multisign_mark,
 );
 
 
