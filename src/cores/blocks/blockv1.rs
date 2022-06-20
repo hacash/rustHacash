@@ -16,7 +16,7 @@ pub struct BlockV1 {
 	witness_stage: Fixedbytes2, // Witness quantity level
 
 	// body
-	transactions: Vec<Box<dyn TransactionReadOnly>>
+	transactions: Vec<Box<dyn Transaction>>
 
 }
 
@@ -117,13 +117,17 @@ impl BlockReadOnly for BlockV1 {
     }
 
     /* */
+}
+
+impl Block for BlockV1 {
 
     fn verify_all_signs(&self) -> bool {
         false
     }
 
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainStateOperation) -> ActionStateWriteInReturnType {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> ActionStateWriteInReturnType {
         panic!("never call this!")
     }
+
 }

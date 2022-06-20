@@ -277,7 +277,7 @@ impl_Field_trait_for_common!(0, $class,
 
 #[macro_export] 
 macro_rules! impl_Action_trait_for_common{
-    ($class: ty, $codeblock1: block, $codeblock2: block, $param_state: ident, $codeblock3: block) => (
+    ($class: ty, $codeblock1: block, $codeblock2: block, $param_state: ident, $param_store: ident, $codeblock3: block) => (
 
 
 
@@ -295,7 +295,7 @@ impl Action for $class {
         $codeblock2
     }
 
-	fn write_in_chain_state(&self, $param_state: &mut dyn ChainStateOperation) -> ActionStateWriteInReturnType {
+	fn write_in_chain_state(&self, $param_state: &mut dyn ChainState, $param_store: &mut dyn BlockStore) -> ActionStateWriteInReturnType {
         $codeblock3
     }
 

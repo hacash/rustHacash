@@ -20,7 +20,7 @@ impl_Action_trait_for_common!( Action1HacTrs,
 
     // write_in_chain_state
     // _state &mut dyn ChainStateOperation -> Result<Option<Box<dyn ChainState>>, String>
-    _state, {
+    _state, _store, {
         println!("{}", "---++++++++++----------- impl Action1HacTrs pub fn write_in_chain_state");
         None // do nothing
     }

@@ -1,12 +1,12 @@
 
 
-// create String macro
-macro_rules! create_string_struct_and_impl{
+// create Bytes macro
+macro_rules! create_bytes_struct_and_impl{
     ($tip:expr, $name:ident, $lenty:ty, $size_max:expr) => (
 
 pub struct $name {
     len: $lenty,
-    str: Vec<u8>,
+    bytes: Vec<u8>,
 }
 
 
@@ -15,11 +15,11 @@ impl Field for $name {
     fn serialize(&self) -> Vec<u8> {
         let lv = self.size();
         let mut res = Vec::with_capacity(lv);
-        if self.len.value() as usize != self.str.len() {
+        if self.len.value() as usize != self.bytes.len() {
             panic!("{} size not match.", $tip)
         }
         res.append(&mut self.len.serialize());
-        res.append(&mut self.str.clone());
+        res.append(&mut self.bytes.clone());
         res
     }
 
@@ -29,7 +29,7 @@ impl Field for $name {
         let strlen = self.len.value() as usize;
         let seek2 = parse_move_seek_or_buf_too_short!($tip, seek, strlen, buf);
         let sv = &buf[seek..seek2];
-        self.str = sv.to_vec();
+        self.bytes = sv.to_vec();
         Ok(seek2)
     }
 
@@ -38,10 +38,12 @@ impl Field for $name {
     }
     
     fn describe(&self) -> String {
-        let se = String::from_utf8(self.str.clone());
-        let sss = match se {
-            Err(_) => hex::encode(&self.str),
-            Ok(s) => s,
+        let sss: String;
+        if self.bytes.len() > 200 {
+            let s1 = hex::encode(&self.bytes[0..200]);
+            sss = (s1.to_owned() + "...").to_string();
+        }else{
+            sss = hex::encode(&self.bytes);
         };
         format!("\"{}\"", sss)
     }
@@ -55,16 +57,15 @@ impl $name {
     pub fn new() -> $name {
         $name{
             len: <$lenty>::new(),
-            str: vec![],
+            bytes: vec![],
         }
     }
 
-    pub fn to_string(&self) -> String {
-        String::from_utf8(self.str.clone()).unwrap()
+    pub fn to_bytes(&self) -> Vec<u8> {
+        self.bytes.clone()
     }
     
-    pub fn from_string(stuff: &String) -> Result<$name, String> {
-        let bytes = stuff.clone().into_bytes();
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<$name, String> {
         let lv = bytes.len();
         if lv == 0 {
             return Err(format!("{}.new len cannot be 0.", $tip))
@@ -74,7 +75,7 @@ impl $name {
         }
         Ok($name{
             len: <$lenty>::from_u64(lv as u64),
-            str: bytes,
+            bytes: bytes,
         })
     }
 
@@ -89,7 +90,7 @@ impl Clone for $name {
     fn clone(&self) -> $name {
         $name{
             len: self.len.clone(),
-            str: self.str.clone(),
+            bytes: self.bytes.clone(),
         }
     }
 }
@@ -102,7 +103,8 @@ impl Clone for $name {
 
 
 // create
-create_string_struct_and_impl!("StringMax255",   StringMax255,   Uint1, 255usize);
-create_string_struct_and_impl!("StringMax65535", StringMax65535, Uint2, 65535usize);
+create_bytes_struct_and_impl!("BytesMax255",        BytesMax255,        Uint1, 255usize);
+create_bytes_struct_and_impl!("BytesMax65535",      BytesMax65535,      Uint2, 65535usize);
+create_bytes_struct_and_impl!("BytesMax4294967295", BytesMax4294967295, Uint4, 4294967295usize);
 
 

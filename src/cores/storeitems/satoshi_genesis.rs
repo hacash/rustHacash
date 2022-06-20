@@ -1,6 +1,12 @@
 
 
 // pub struct
+pub_struct_store_item_define_common!(BTCMoveTxHashItem,        
+	bitcoin_transfer_hash       , Hash             ,             
+);
+
+
+// pub struct
 pub_struct_store_item_define_common!(SatoshiGenesisItem, 
 
 	transfer_no                 , Uint4            ,         

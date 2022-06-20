@@ -8,7 +8,7 @@ macro_rules! block_version_define_parse_func_include{
         )+
 
         // parse func
-        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, Box<dyn BlockReadOnly>), String> {
+        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, Box<dyn Block>), String> {
             println!("--------------------------------{}", seek);
             let (_, typev) = parse_move_seek_or_return_err!("blocks.parse", Uint1, buf, seek);
             let ty = typev.value() as u8;

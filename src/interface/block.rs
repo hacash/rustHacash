@@ -17,12 +17,19 @@ pub trait BlockReadOnly : Field {
 
     /* */
 
+
+}
+
+
+
+pub trait Block : BlockReadOnly {
+
     fn verify_all_signs(&self) -> bool {
         false
     }
-
+    
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainStateOperation) -> ActionStateWriteInReturnType {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> ActionStateWriteInReturnType {
         panic!("never call this!")
     }
 

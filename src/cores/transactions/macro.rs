@@ -8,7 +8,7 @@ macro_rules! transactions_type_define_parse_func_include{
         )+
 
         // parse func
-        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, Box<dyn TransactionReadOnly>), String> {
+        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, Box<dyn Transaction>), String> {
             println!("----- transactions.parse start ------ {}", seek);
             let (_, typev) = parse_move_seek_or_return_err!("transactions.parse", Uint1, buf, seek);
             let ty = typev.value() as u8;
@@ -97,7 +97,7 @@ impl $class {
     pub_fn_field_parse_wrap_return!($class, {<$class>::new()});
 }
 
-impl TransactionReadOnly for $class {
+impl TransactionRead for $class {
 
     fn get_type(&self) -> u8 {
         $tyid
@@ -134,14 +134,14 @@ impl TransactionReadOnly for $class {
 
     /* */
 
-    fn hash(&mut self) -> Option<Hash> {
+    fn hash(&self) -> Option<Hash> {
         // calculate hash no fee
         let stuff = self.serialize_for_sign_no_fee();
         let hx = x16rs::calculate_hash(stuff);
         let hx = Hash::from(hx);
         Some(hx)
     }
-    fn hash_with_fee(&mut self) -> Option<Hash> {
+    fn hash_with_fee(&self) -> Option<Hash> {
         // calculate hash with fee
         let stuff = self.serialize_for_sign();
         let hx = x16rs::calculate_hash(stuff);
@@ -183,10 +183,15 @@ impl TransactionReadOnly for $class {
         None
     }
 
+}
+
+impl Transaction for $class {
+
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainStateOperation) -> Option<String> {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> Option<String> {
         panic!("never call this!")
     }
+
 }
 
     )

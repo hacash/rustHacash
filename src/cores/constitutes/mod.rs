@@ -12,5 +12,6 @@ include!("./signcheck.rs");
 
 include!("./balance.rs");
 include!("./channel.rs");
+include!("./lending.rs");
 
 

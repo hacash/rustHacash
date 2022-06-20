@@ -11,7 +11,7 @@ pub trait Action : Field {
     fn request_sign_addresses(&self) -> Vec<Address>;
 
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainStateOperation) -> ActionStateWriteInReturnType;
+	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> ActionStateWriteInReturnType;
 
 }
 

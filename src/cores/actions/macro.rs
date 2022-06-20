@@ -1,6 +1,6 @@
 
 macro_rules! actions_kind_define_parse_func_include{
-    ( $( $kindid:ident, $kindv:tt, $class:ty ),+ ) => (
+    ( $( $kindid:ident, $kindv:expr, $class:ty, )+ ) => (
 
         // kind define
         $(

@@ -33,7 +33,7 @@ impl_Field_trait_for_common!( 0, TransactionCoinbase,
     extend,
 );
 
-impl TransactionReadOnly for TransactionCoinbase {
+impl TransactionRead for TransactionCoinbase {
     
     fn get_type(&self) -> u8 {
         self.ty.value()
@@ -52,6 +52,8 @@ impl TransactionReadOnly for TransactionCoinbase {
     }
 }
 
+impl Transaction for TransactionCoinbase {
+}
 
 
 

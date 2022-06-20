@@ -11,6 +11,7 @@ use crate::interface::{Field, FieldNumber};
 include!("./macro.rs");
 
 include!("./fixedbytes.rs");
+include!("./bytes.rs");
 include!("./varint.rs");
 include!("./varfloat.rs");
 include!("./bool.rs");

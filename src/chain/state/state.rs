@@ -1,16 +1,16 @@
 
-pub struct ChainStatus {
+// pub struct ChainStatus {
 
-}
+// }
 
 
-impl ChainStatus {
+// impl ChainStatus {
     
-    pub fn new() ->ChainStatus {
-        ChainStatus{}
-    }
+//     pub fn new() ->ChainStatus {
+//         ChainStatus{}
+//     }
     
-}
+// }
 
 
 

@@ -1,8 +1,8 @@
 
-pub trait TransactionReadOnly : Field {
+pub trait TransactionRead : Field {
 
-    fn hash(&mut self) -> Option<Hash> { None }
-    fn hash_with_fee(&mut self) -> Option<Hash>{ None }
+    fn hash(&self) -> Option<Hash> { None }
+    fn hash_with_fee(&self) -> Option<Hash>{ None }
 
     /* */
 
@@ -27,9 +27,15 @@ pub trait TransactionReadOnly : Field {
 
     fn request_sign_addresses(&self) -> Option<Vec<Address>> { None }
 
+
+}
+
+
+pub trait Transaction : TransactionRead {
+
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainStateOperation) -> Option<String> {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> Option<String> {
         panic!("never call this!")
     }
-
+    
 }

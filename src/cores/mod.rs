@@ -21,6 +21,9 @@ pub mod blocks;
 #[macro_use]
 pub mod storeitems;
 
+#[macro_use]
+pub mod databags;
+
 
 
 
