@@ -3,24 +3,9 @@
 macro_rules! create_fixedbytes_struct_and_impl{
     ($tip:expr, $name:ident, $size:expr) => (
 
-#[derive(Hash, Eq)]
+#[derive(Hash, Clone, PartialEq, Eq)]
 pub struct $name {
     bytes: [u8; $size],
-}
-
-
-impl PartialEq for $name {
-    fn eq(&self, other: &Self) -> bool {
-        self.bytes == other.bytes
-    }
-}
-
-impl Clone for $name {
-    fn clone(&self) -> $name {
-        $name{
-            bytes: self.bytes.clone(),
-        }
-    }
 }
 
 impl Index<usize> for $name {

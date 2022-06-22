@@ -24,7 +24,7 @@ pub const UINT8_SIZE_VL: usize = 8;
 macro_rules! create_varint_struct_and_impl{
     ($tip:expr, $name:ident, $vty:ty, $size:expr, $size_vl:expr) => (
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Hash, Clone, PartialEq, Eq)]
 pub struct $name {
     value: $vty,
 }
