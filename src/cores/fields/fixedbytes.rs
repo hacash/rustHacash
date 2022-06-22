@@ -3,10 +3,16 @@
 macro_rules! create_fixedbytes_struct_and_impl{
     ($tip:expr, $name:ident, $size:expr) => (
 
-        
-#[derive(PartialEq)]
+#[derive(Hash, Eq)]
 pub struct $name {
     bytes: [u8; $size],
+}
+
+
+impl PartialEq for $name {
+    fn eq(&self, other: &Self) -> bool {
+        self.bytes == other.bytes
+    }
 }
 
 impl Clone for $name {
@@ -14,6 +20,13 @@ impl Clone for $name {
         $name{
             bytes: self.bytes.clone(),
         }
+    }
+}
+
+impl Index<usize> for $name {
+    type Output = u8;
+    fn index(&self, idx: usize) -> &Self::Output {
+        &self.bytes[idx]
     }
 }
 
@@ -38,13 +51,17 @@ impl Field for $name {
     }
 
     fn describe(&self) -> String {
-        format!("\"{}\"", hex::encode(self.bytes))
+        format!("\"{}\"", self.to_hex())
     }
 
 } 
 
 
 impl $name {
+
+    pub fn len(&self) -> usize {
+        <$name>::size()
+    }
 
     const fn size() -> usize {
         $size
@@ -61,7 +78,14 @@ impl $name {
     }
 
     pub fn to_string(&self) -> String {
-        String::from_utf8(self.bytes.to_vec()).unwrap()
+        match String::from_utf8(self.bytes.to_vec()) {
+            Err(_) => "..[ERR]..".to_string(),
+            Ok(s) => s,
+        }
+    }
+
+    pub fn to_hex(&self) -> String {
+        hex::encode(self.bytes)
     }
 
     pub fn from( v: [u8; $size] ) -> $name {

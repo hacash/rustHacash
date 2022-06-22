@@ -29,6 +29,38 @@ macro_rules! block_version_define_parse_func_include{
 
 
 
+macro_rules! impl_Action_trait_for_common{
+    ($class: ty, $codeblock1: block, $codeblock2: block, $param_state: ident, $param_store: ident, $codeblock3: block) => (
+
+
+
+impl Action for $class {
+
+    fn kind(&self) -> u16 {
+        <$class>::get_kind()
+    }
+
+    fn is_burning_90_persent_tx_fee(&self) -> bool {
+        $codeblock1
+    }
+
+    fn request_sign_addresses(&self) -> Vec<Address> {
+        $codeblock2
+    }
+
+	fn write_in_chain_state(&self, $param_state: &mut dyn ChainState) -> Option<String> {
+        $codeblock3
+    }
+
+
+}
+
+    )
+}
+
+
+
+
 
 
 

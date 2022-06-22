@@ -1,4 +1,10 @@
 
+static NEVER_CALL_THIS: &str = "never call this"; 
+
+#[macro_export] 
+macro_rules! panic_never_call_this{
+()=>( panic!("{}", NEVER_CALL_THIS) )
+}
 
 #[macro_export] 
 macro_rules! parse_move_seek_or_return_err{
@@ -224,86 +230,6 @@ impl Field for $class {
 }
 
 
-
-/*************** actions ****************/
-
-
-#[macro_export] 
-macro_rules! action_create_struct_for_common_items{
-    ($kindid: expr, $class: ident, $( $k: ident, $ty:ty),+) => (
-
-pub struct $class {
-    $(
-        $k: $ty
-    ),*
-}
-
-
-impl $class {
-
-    pub fn new() -> $class {
-        $class {
-            $(
-                $k: <$ty>::new()
-            ),*
-        }
-    }
-
-    const fn get_kind() -> u16 {
-        $kindid
-    }
-
-    // parse function
-    pub_fn_field_parse_wrap_return!($class, {$class::new()});
-
-}
-
-
-// impl Field for $class
-impl_Field_trait_for_common!(0, $class, 
-    $(
-        $k,
-    )+
-);
-
-
-
-    )
-}
-
-
-
-
-
-#[macro_export] 
-macro_rules! impl_Action_trait_for_common{
-    ($class: ty, $codeblock1: block, $codeblock2: block, $param_state: ident, $param_store: ident, $codeblock3: block) => (
-
-
-
-impl Action for $class {
-
-    fn kind(&self) -> u16 {
-        <$class>::get_kind()
-    }
-
-    fn is_burning_90_persent_tx_fee(&self) -> bool {
-        $codeblock1
-    }
-
-    fn request_sign_addresses(&self) -> Vec<Address> {
-        $codeblock2
-    }
-
-	fn write_in_chain_state(&self, $param_state: &mut dyn ChainState, $param_store: &mut dyn BlockStore) -> ActionStateWriteInReturnType {
-        $codeblock3
-    }
-
-
-}
-
-    )
-}
 
 
 

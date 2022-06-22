@@ -82,14 +82,34 @@ impl BlockV1 {
 
 
 
-impl BlockReadOnly for BlockV1 {
+impl BlockRead for BlockV1 {
 
-    fn hash(&self) -> Option<Hash> { None } 
+    fn hash(&self) -> Hash { 
+        panic!("")
+    } 
+
+    fn copy_block_ptr(&self) -> BlockPtr {
+        BlockPtr{
+            height: self.get_height().clone(),
+            hash:   self.hash(),
+        }
+    }
+
+    fn copy_block_head(&self) -> BlockHead {
+        BlockHead{
+            version               : self.get_version().clone(),
+            height                : self.get_height().clone(),
+            timestamp             : self.get_timestamp().clone(),
+            prev_hash             : self.get_prev_hash().clone(),
+            mrkl_root             : self.get_mrkl_root().clone(),
+            transaction_count     : self.get_transaction_count().clone(),
+        }
+    }
 
     /* */
 
-	fn get_version(&self) -> u8 {
-        self.version.value()
+	fn get_version(&self) -> &Uint1 {
+        &self.version
     }
     fn get_height(&self) -> &BlockHeight {
         &self.height
@@ -103,6 +123,9 @@ impl BlockReadOnly for BlockV1 {
 	fn get_mrkl_root(&self) -> &Hash {
         &self.mrkl_root
     }
+    fn get_transaction_count(&self) -> &Uint4 {
+        &self.transaction_count
+    }
 	fn get_difficulty(&self) -> u32 {
         self.difficulty.value()
     }
@@ -115,6 +138,9 @@ impl BlockReadOnly for BlockV1 {
     fn get_witness_stage(&self) -> &Fixedbytes2 {
         &self.witness_stage
     }
+	fn get_transactions(&self) -> &Vec<Box<dyn Transaction>> {
+        &self.transactions
+    }
 
     /* */
 }
@@ -122,12 +148,68 @@ impl BlockReadOnly for BlockV1 {
 impl Block for BlockV1 {
 
     fn verify_all_signs(&self) -> bool {
-        false
+        for act in self.get_transactions() {
+            if false == act.verify_all_signs() {
+                return false // fail
+            }
+        }
+        true
     }
 
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> ActionStateWriteInReturnType {
-        panic!("never call this!")
+	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<bool, String> {
+        let txlist = self.get_transactions();
+        let txlen = txlist.len();
+        if txlen < 1 {
+            return Err("coinbase tx not find".to_string())
+        }
+        let blkhei = self.get_height().value();
+        let mut fee_total = Amount::new();
+        let mut fee_total_received = Amount::new();
+        // txs 
+        for ti in 1..txlen {
+            let tx = &txlist[ti];
+            let txhx = tx.hash();
+            if transactions::TRANSACTION_TYPE_0_COINBASE == tx.get_type() {
+                return Err("tx type error".to_string())
+            }
+            // check tx exist
+            let cctx = state.get_tx_contain(&txhx) ? ;
+            if let Some(hei) = cctx {
+                // problem repair: block 63448 contains the same transaction twice
+                if blkhei != 63448 {
+                    return Err(format!("tx {} is exist in block {}.", txhx.to_hex(), hei.get_height().value()))
+                }
+            }
+            // save tx contain
+            let mut cctxobj = ContainTxItem::new();
+            cctxobj.set_height(BlockHeight::from_u64(blkhei));
+            state.set_tx_contain(&txhx, &cctxobj) ? ;
+            // tx call write_in_chain_state
+            tx.write_in_chain_state(state) ? ;
+            // fee statistics
+            let feegot = tx.get_fee_of_miner_real_received();
+            fee_total_received = fee_total_received.add(&feegot) ? ; // add up
+            fee_total = fee_total.add( &tx.get_fee() ) ? ;
+        }
+        // coinbase call write_in_chain_state
+        let cbtx = &txlist[0];
+        if cbtx.get_type() != transactions::TRANSACTION_TYPE_0_COINBASE {
+            return Err("coinbase tx type error".to_string())
+        }
+        cbtx.write_in_chain_state(state) ? ;
+        let cbaddr = cbtx.get_address();
+        // send block fee
+        operate::hac_add(state, cbaddr, &fee_total_received) ? ;
+        // update total supply
+        if fee_total.not_equal(&fee_total_received) {
+            let burnfee_blk = fee_total.sub(&fee_total_received) ? ;
+            let mut ttcount = state.get_total_supply() ? ;
+            let rlbfe = ttcount.get_burning_fee().value() + burnfee_blk.to_mei_unsafe(); // total burn fee
+            ttcount.set_burning_fee( Float8::from(rlbfe) );
+            state.set_total_supply( &ttcount ) ? ;
+        }
+        Ok(true)
     }
 
 }

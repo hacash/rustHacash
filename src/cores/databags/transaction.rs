@@ -13,8 +13,8 @@ impl TxBag {
     pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<TxBag, String> {
         let (mvsk, txobj) = transactions::parse(buf, seek) ? ;
         Ok(TxBag {
-            hash: txobj.hash().unwrap(),
-            hash_with_fee: txobj.hash_with_fee().unwrap(),
+            hash: txobj.hash(),
+            hash_with_fee: txobj.hash_with_fee(),
             body: buf[seek..mvsk].to_vec(),
             obj: txobj,
         })
@@ -26,8 +26,8 @@ impl TxBag {
             return Err("body.len error".to_string())
         }
         Ok(TxBag {
-            hash: txobj.hash().unwrap(),
-            hash_with_fee: txobj.hash_with_fee().unwrap(),
+            hash: txobj.hash(),
+            hash_with_fee: txobj.hash_with_fee(),
             body: body,
             obj: txobj,
         })

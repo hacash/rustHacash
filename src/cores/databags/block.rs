@@ -15,7 +15,7 @@ impl BlockBag {
             return Err("body.len error".to_string())
         }
         Ok(BlockBag {
-            hash: blkobj.hash().unwrap(),
+            hash: blkobj.hash(),
             body: body,
             obj: blkobj,
         })
@@ -24,7 +24,7 @@ impl BlockBag {
     pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<BlockBag, String> {
         let (mvsk, blkobj) = blocks::parse(buf, seek) ? ;
         Ok(BlockBag {
-            hash: blkobj.hash().unwrap(),
+            hash: blkobj.hash(),
             body: buf[seek..mvsk].to_vec(),
             obj: blkobj,
         })

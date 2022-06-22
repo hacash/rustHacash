@@ -1,8 +1,8 @@
 
 
 pub struct Sign {
-    publickey: Fixedbytes33,   
-    signature: Fixedbytes64,
+    pub publickey: Fixedbytes33,   
+    pub signature: Fixedbytes64,
 }
 
 impl Sign {

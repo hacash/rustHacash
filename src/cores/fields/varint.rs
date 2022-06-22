@@ -24,21 +24,52 @@ pub const UINT8_SIZE_VL: usize = 8;
 macro_rules! create_varint_struct_and_impl{
     ($tip:expr, $name:ident, $vty:ty, $size:expr, $size_vl:expr) => (
 
-
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct $name {
-    bytes: [u8; $size],
+    value: $vty,
 }
+
+
+impl Add for $name {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        $name {value: self.value + other.value}
+    }
+}
+
+impl Sub for $name {
+    type Output = $name;
+    fn sub(self, other: $name) -> $name {
+        $name {value: self.value - other.value}
+    }
+}
+
+impl Mul for $name {
+    type Output = $name;
+    fn mul(self, other: $name) -> $name {
+        $name {value: self.value * other.value}
+    }
+}
+
+impl Div for $name {
+    type Output = $name;
+    fn div(self, other: $name) -> $name {
+        $name {value: self.value / other.value}
+    }
+}
+
 
 impl Field for $name {
 
     fn serialize(&self) -> Vec<u8> {
-        self.bytes.to_vec() // clone
+        let bts = <$vty>::to_be_bytes(self.value);
+        let drop_zore = $size_vl - $size;
+        bts[drop_zore..].to_vec()
     }
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
         let mvseek = parse_move_seek_or_buf_too_short!($tip, seek, $size, buf);
-        self.bytes = buf[seek..mvseek].try_into().unwrap();
+        self.value = <$name>::from_bytes_value(buf[seek..mvseek].try_into().unwrap());
         // println!("{}  {}  {}  +=+++=+++===", seek, mvseek, self.bytes[0]);
         Ok(mvseek)
     }
@@ -53,13 +84,6 @@ impl Field for $name {
 
 }
 
-impl Clone for $name {
-    fn clone(&self) -> $name {
-        $name{
-            bytes: self.bytes.clone(),
-        }
-    }
-}
 
 impl FieldNumber for $name {
 
@@ -68,9 +92,7 @@ impl FieldNumber for $name {
     }
 
     fn set_value(&mut self, v: u64) {
-        let bts = <$vty>::to_be_bytes(v as $vty);
-        let drop_zore = $size_vl - $size;
-        self.bytes = bts[drop_zore..].try_into().unwrap();
+        self.value = v as $vty;
     }
 }
 
@@ -82,16 +104,13 @@ impl $name {
 
     pub fn new() -> $name {
         $name{
-            bytes: [0u8; $size],
+            value: 0,
         }
     }
 
-    pub fn from(v: $vty) -> $name {
-        let bts = <$vty>::to_be_bytes(v);
-        let drop_zore = $size_vl - $size;
+    pub const fn from(v: $vty) -> $name {
         $name{
-            // drop left zore
-            bytes: bts[drop_zore..].try_into().unwrap(),
+            value: v,
         }
     }
 
@@ -106,29 +125,59 @@ impl $name {
         }
     }
 
-    pub const fn from_bytes(v: [u8; $size]) -> $name {
-        $name{
-            bytes: v,
-        }
-    }
-
-    pub fn value(&self) -> $vty {
+    pub fn from_bytes_value(v: [u8; $size]) -> $vty {
         // add left zore
         let drop_zore = $size_vl - $size;
         let mut rv = Vec::with_capacity($size_vl);
         rv.resize(drop_zore, 0u8);
-        let appbts = &mut self.bytes.to_vec();
+        let appbts = &mut v.to_vec();
         rv.append(appbts);
         <$vty>::from_be_bytes(rv.try_into().unwrap())
     }
 
+    pub fn from_bytes(v: [u8; $size]) -> $name {
+        $name{
+            value: <$name>::from_bytes_value(v),
+        }
+    }
+
+    pub fn value(&self) -> $vty {
+        self.value
+    }
+
     // parse function
     pub_fn_field_parse_wrap_return!($name, {<$name>::new()});
+
+    // add sub mul div
+    pub fn add(&self, v: $vty) -> $name {
+        $name {
+            value: self.value + v,
+        }
+    }
+    pub fn sub(&self, v: $vty) -> $name {
+        $name {
+            value: self.value - v,
+        }
+    }
+    pub fn mul(&self, v: $vty) -> $name {
+        $name {
+            value: self.value * v,
+        }
+    }
+    pub fn div(&self, v: $vty) -> $name {
+        $name {
+            value: self.value / v,
+        }
+    }
 }
+
+
 
 
     )
 }
+
+
 
 
 // create struct

@@ -222,6 +222,30 @@ impl Amount {
         Ok(amt)
     }
 
+    pub fn to_mei_unsafe(&self) -> f64 {
+
+        // let mut amt = Amount::new();
+        if self.is_empty() {
+            return 0f64
+        }
+        let chax = (248 - (self.unit as i32)).abs() as u32;
+        if chax > 8 + 8 {
+            return 0f64
+        }
+        // num
+        let num = BigInt::from_bytes_be(Plus, &self.byte[..]).to_f64().unwrap();
+        // unit
+        let base = 10i32.pow(chax) as f64;
+        let mut resv = match self.unit > 248 {
+            true => num * base,
+            false => num / base,
+        };
+        // sign
+        if self.dist < 0 {
+            resv = resv * -1f64;
+        }
+        resv
+    }
 
 }
 
@@ -296,29 +320,7 @@ impl Amount {
     }
 
     pub fn to_mei_string_unsafe(&self) -> String {
-        // let mut amt = Amount::new();
-        if self.is_empty() {
-            return "0".to_string()
-        }
-        let chax = (248 - (self.unit as i32)).abs() as u32;
-        if chax > 8 + 8 {
-            return "0".to_string()
-        }
-        // num
-        let num = BigInt::from_bytes_be(Plus, &self.byte[..]).to_f64().unwrap();
-        // unit
-        let base = 10i32.pow(chax) as f64;
-        let resv = match self.unit > 248 {
-            true => num * base,
-            false => num / base,
-        };
-        // sign
-        let resv = resv.to_string();
-        let resv = resv.as_str();
-        match self.dist < 0 {
-            true => ("-".to_owned() + resv).to_string(),
-            false => resv.to_string(),
-        }
+        self.to_mei_unsafe().to_string()
     }
 
     pub fn to_mei_or_fin_string(&self, usemei: bool) -> String {

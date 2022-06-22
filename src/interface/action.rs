@@ -1,6 +1,6 @@
 
 
-pub type ActionStateWriteInReturnType = Option<String>;
+// pub type Option<String> = Option<String>;
 
 pub trait Action : Field {
 
@@ -8,10 +8,10 @@ pub trait Action : Field {
 
     fn is_burning_90_persent_tx_fee(&self) -> bool;
 
-    fn request_sign_addresses(&self) -> Vec<Address>;
+    fn request_sign_addresses(&self) -> HashMap<Address, bool>;
 
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> ActionStateWriteInReturnType;
+	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: & dyn Transaction) -> Result<bool, String>;
 
 }
 

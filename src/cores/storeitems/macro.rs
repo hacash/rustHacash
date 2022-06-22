@@ -9,7 +9,7 @@ macro_rules! pub_struct_store_item_define_common{
 pub struct $class {
 
     $(
-        $name: $type
+        pub $name: $type
     ),+
 
 }
@@ -36,8 +36,8 @@ impl $class {
             }
         });
         concat_idents!(fn_name = set_, $name {
-            pub fn fn_name(&mut self, v: &$type) {
-                self.$name = v.clone();
+            pub fn fn_name(&mut self, v: $type) {
+                self.$name = v;
             }
         });
     )+

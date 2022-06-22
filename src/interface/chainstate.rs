@@ -3,30 +3,46 @@
 
 
 macro_rules! define_chain_state_operation_of_common{
-    ($( $name: ident, $keyty: ty, $vtype: ty, )+) => (
+    (
+        ($( $kfix1:tt, $name1:ident, $vtype1:ty )+),
+        ($( $kfix2:tt, $name2:ident, $keyty2:ty, $vtype2:ty )+)
+    ) => (
 
 
 pub trait ChainStateRead {
 
-    // fn get_block_store_read(&self) -> Box<dyn BlockStoreRead>;
+    fn is_debug_test_mode(&self) -> bool { false } // is debug mode
+    fn pending_block_height(&self) -> BlockHeight { BlockHeight::from_u64(0) }
+    fn pending_block_hash(&self) -> Option<Hash> { None }
 
     $(
-        concat_idents!(fn_get = get_, $name {
-            fn fn_get (&self, _: &$keyty) -> Result<$vtype, String> { Err("".to_string()) }
+        concat_idents!(fn_get_1 = get_, $name1 {
+            fn fn_get_1 (&self) -> Result<$vtype1, String> { Err("".to_string()) }
+        });  
+    )+
+    $(
+        concat_idents!(fn_get_2 = get_, $name2 {
+            fn fn_get_2 (&self, _: &$keyty2) -> Result<Option<$vtype2>, String> { Ok(None) }
         });  
     )+
 }
 
-pub trait ChainState : ChainStateRead {
-
-    // fn get_block_store(&mut self) -> Box<dyn BlockStore>;
+pub trait ChainStateOperate : ChainStateRead {
 
     $(
-        concat_idents!(fn_set = set_, $name {
-            fn fn_set(&mut self, _: &$keyty, _: &$vtype) -> Option<String> { None }
+        concat_idents!(fn_set_1 = set_, $name1 {
+            fn fn_set_1(&mut self, _: &$vtype1) -> Result<bool, String> { Ok(false) }
         });
-        concat_idents!(fn_del = del_, $name {
-            fn fn_del(&mut self, _: &$keyty) -> Option<String>  { None }
+        concat_idents!(fn_del_1 = del_, $name1 {
+            fn fn_del_1(&mut self) -> Result<bool, String> { Ok(false) }
+        });
+    )+
+    $(
+        concat_idents!(fn_set_2 = set_, $name2 {
+            fn fn_set_2(&mut self, _: &$keyty2, _: &$vtype2) -> Result<bool, String> { Ok(false) }
+        });
+        concat_idents!(fn_del_2 = del_, $name2 {
+            fn fn_del_2(&mut self, _: &$keyty2) -> Result<bool, String> { Ok(false) }
         });
     )+
 }
@@ -42,31 +58,61 @@ pub trait ChainState : ChainStateRead {
 
 // ChainStateOperation & ChainStateOperationRead
 define_chain_state_operation_of_common!(
-
-    balance, Address, BalanceItem,
-    // channel, ChannelId, BalanceItem,
-    // diamond, DiamondName, DiamondItem,
-
-    // lockbls, LockblsId, LockblsItem,
-    // btcmove_txhash, Uint4, BTCMoveTxHashItem,
-    // total_supply, Uint1, TotalSupplyItem,
-    
-    // bitcoin_syslend, BitcoinSyslendId, BitcoinSystemLendingItem,
-    // diamond_syslend, DiamondSyslendId, BitcoinSystemLendingItem,
-    // user_lend, UserLendingId, UserLendingItem,
-
-    diamond_refer, DiamondNumber, DiamondName,
-    diamond_smelt, DiamondName, DiamondSmeltItem,
-
-    block_refer, BlockHeight, Hash,
-    block_bytes, Hash, Hash,
-
-    
+    (
+        1u8   , total_supply                               , TotalSupplyItem
+    ),(
+        21u8  , tx_contain          , Hash                 , ContainTxItem
+                                                                        
+        22u8  , balance             , Address              , BalanceItem
+        23u8  , channel             , ChannelId            , ChannelItem
+        24u8  , diamond             , DiamondName          , DiamondItem
+        25u8  , lockbls             , LockblsId            , LockblsItem
+                                                                                          
+        26u8  , satoshi_genesis     , Uint4                , SatoshiGenesisItem
+        27u8  , btcmove_txhash      , Uint4                , BTCMoveTxHashItem
+                                                                            
+        28u8  , bitcoin_syslend     , BitcoinSyslendId     , BitcoinSystemLendingItem
+        29u8  , diamond_syslend     , DiamondSyslendId     , BitcoinSystemLendingItem
+        30u8  , user_lend           , UserLendingId        , UserLendingItem
+                                                                                      
+        31u8  , diamond_refer       , DiamondNumber        , DiamondName
+        32u8  , diamond_smelt       , DiamondName          , DiamondSmeltItem
+                                                                                      
+        33u8  , block_refer         , BlockHeight          , Hash
+        34u8  , block_bytes         , Hash                 , BytesMax4294967295
+    )
 );
 
 
 // ChainState
-pub trait ChainStateInstance : ChainState {
+pub trait ChainState : ChainStateOperate {
+
+    fn id(&self) -> usize;
+
+	// Destruction
+	fn close(&mut self) {} // close datadir etc
+	fn destory(&mut self) {} // Destroy, including deleting all sub States, caches, status data, etc
+
+	// Judgment type
+	fn is_immutable(&self) -> bool { false }
+	// Save on disk
+	fn immutable_write_to_disk(&mut self) -> Option<String> { None }
+	// Get parent status
+	fn get_parent(&self) -> Option<WeakArcMutexDynChainState> { None }
+	// Get all child States
+	// fn get_childs(&self) -> Vec<ArcMutexDynChainState> { vec![] }
+    fn append_child(&mut self, _: ArcMutexDynChainState) {}
+
+	// Start a sub state
+	// fn fork_with_next_block(&self, _: & dyn Block) -> Result<ArcMutexDynChainState, String> { Err(String::new()) }
+	// fn fork_sub_child(&self) -> ArcMutexDynChainState;
+    // fn fork_sub_child(_: ArcMutexDynChainState) -> ArcMutexDynChainState;
+
+    // copy cover
+	fn traversal_copy(&mut self, _: &ArcMutexDynChainState) -> Option<String> { None }
+
+	//GetReferBlock() (uint64, fields.Hash)
+	fn search_state_by_block_hash(&self, _: &Hash) -> Result<Option<ArcMutexDynChainState>, String> { Ok(None) }
 
 }
 

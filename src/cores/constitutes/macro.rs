@@ -6,7 +6,7 @@ macro_rules! pub_struct_define_for_common{
 // 
 pub struct $class {
     $(
-        $value: $value_type,
+        pub $value: $value_type,
     )+
 }
 
@@ -59,7 +59,7 @@ macro_rules! pub_struct_define_for_if_exist{
 
 // if have $value
 pub struct $class {
-	is_exist: Bool,
+	exists: Bool,
 	$value: Option<$value_type>,
 }
 
@@ -68,8 +68,19 @@ impl $class {
 
     pub fn new() -> $class {
         $class {
-            is_exist: Bool::create(false),
+            exists: Bool::create(false),
             $value: None,
+        }
+    }
+
+    pub fn is_exist(&self) -> bool {
+        self.exists.check()
+    }
+
+    pub fn get_value(&self) -> Option<& $value_type> {
+        match &self.$value {
+            Some(v) => Some(&v),
+            None => None,
         }
     }
 
@@ -82,7 +93,7 @@ impl $class {
 impl Clone for $class {
     fn clone(&self) -> $class {
         $class {
-            is_exist: self.is_exist.clone(),
+            exists: self.exists.clone(),
             $value: self.$value.clone(),
         }
     }
@@ -91,7 +102,7 @@ impl Clone for $class {
 
 // impl Field for $class
 impl_Field_trait_if_exist!($class, 
-    is_exist,
+    exists,
     $value, $value_type
 );
 

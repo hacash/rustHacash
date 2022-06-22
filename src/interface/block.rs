@@ -1,19 +1,24 @@
 
-pub trait BlockReadOnly : Field {
+pub trait BlockRead : Field {
 
-    fn hash(&self) -> Option<Hash>;
+    fn hash(&self) -> Hash;
+
+    fn copy_block_ptr(&self) -> BlockPtr;
+    fn copy_block_head(&self) -> BlockHead;
 
     /* */
 
-	fn get_version(&self) -> u8;
+	fn get_version(&self) -> &Uint1;
     fn get_height(&self) -> &BlockHeight;
 	fn get_timestamp(&self) -> &BlockTxTimestamp;
 	fn get_prev_hash(&self) -> &Hash;
 	fn get_mrkl_root(&self) -> &Hash;
+    fn get_transaction_count(&self) -> &Uint4;
 	fn get_difficulty(&self) -> u32;
 	fn get_nonce(&self) -> &Fixedbytes4;
 	fn get_nonce_num(&self) -> u32;
     fn get_witness_stage(&self) -> &Fixedbytes2;
+	fn get_transactions(&self) -> &Vec<Box<dyn Transaction>>;
 
     /* */
 
@@ -22,14 +27,14 @@ pub trait BlockReadOnly : Field {
 
 
 
-pub trait Block : BlockReadOnly {
+pub trait Block : BlockRead {
 
     fn verify_all_signs(&self) -> bool {
         false
     }
     
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> ActionStateWriteInReturnType {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState) -> Result<bool, String> {
         panic!("never call this!")
     }
 

@@ -1,31 +1,29 @@
 
 pub trait TransactionRead : Field {
 
-    fn hash(&self) -> Option<Hash> { None }
-    fn hash_with_fee(&self) -> Option<Hash>{ None }
+    fn hash(&self) -> Hash { panic_never_call_this!() }
+    fn hash_with_fee(&self) -> Hash{ panic_never_call_this!() }
 
     /* */
 
     fn get_type(&self) -> u8;
-	fn get_address(&self) -> Option<&Address> { None }
-	fn get_signs(&self) -> Option<&Vec<Sign>> { None }
-    fn get_reward(&self) -> Option<&Amount> { None }
-    fn get_fee(&self) -> Option<&Amount> { None }
-    fn get_fee_of_miner_real_received(&self) -> Option<Amount> { None }
-    fn get_message(&self) -> Option<&StringTrim16> { None }
-	fn get_actions(&self) -> Option<&Vec<Box<dyn Action>>> { None }
+	fn get_address(&self) -> &Address { panic_never_call_this!() }
+    fn get_reward(&self) -> &Amount { panic_never_call_this!() }
+	fn get_signs(&self) -> &Vec<Sign> { panic_never_call_this!() }
+    fn get_fee(&self) -> &Amount { panic_never_call_this!() }
+    fn get_fee_of_miner_real_received(&self) -> Amount { panic_never_call_this!() }
+    fn get_message(&self) -> &StringTrim16 { panic_never_call_this!() }
+	fn get_actions(&self) -> &Vec<Box<dyn Action>> { panic_never_call_this!() }
 
     /* */
 
     fn fee_purity(&self) -> u64 { 0 }
-    fn verify_all_signs(&self) -> bool { false }
-    fn verify_target_signs(&self, _: &Vec<Address>) -> bool { false }
 
     /* */
 
     fn is_burning_90_persent_tx_fee(&self) -> bool { false }
 
-    fn request_sign_addresses(&self) -> Option<Vec<Address>> { None }
+    fn request_sign_addresses(&self) -> HashMap<Address, bool> { HashMap::new() }
 
 
 }
@@ -33,9 +31,12 @@ pub trait TransactionRead : Field {
 
 pub trait Transaction : TransactionRead {
 
+    fn verify_all_signs(&self) -> bool { false }
+    fn verify_target_signs(&self, _: &HashMap<Address, bool>) -> bool { false }
+
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainState, _: &mut dyn BlockStore) -> Option<String> {
-        panic!("never call this!")
+	fn write_in_chain_state(&self, _: &mut dyn ChainState) -> Result<bool, String> {
+        panic_never_call_this!()
     }
     
 }
