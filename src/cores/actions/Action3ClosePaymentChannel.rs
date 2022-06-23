@@ -17,12 +17,10 @@ impl_Action_trait_for_common_single!( Action3ClosePaymentChannel, self, state, t
     }
 	// verify two address sign
     trs.verify_need_signs(&vec![
-        chan.left_bill.address,
-        chan.right_bill.address
+        chan.left_bill.address.clone(),
+        chan.right_bill.address.clone()
     ]) ? ;
-
-
-    
-    Ok(())
+    // do close
+    operate::close_channel_of_default(state, cid, &chan)
 });
 

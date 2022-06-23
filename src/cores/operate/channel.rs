@@ -1,13 +1,12 @@
 
 // close default
-pub fn close_channel(state: &mut dyn ChainState, channel_id: &ChannelId, 
-    paychan: &ChannelItem, is_final_closed: bool) -> Result<(), String> {
+pub fn close_channel_of_default(state: &mut dyn ChainState, channel_id: &ChannelId, paychan: &ChannelItem) -> Result<(), String> {
     close_channel_with_distribution(state, channel_id, paychan, 
     &paychan.left_bill.hacsat.amount,
     &paychan.right_bill.hacsat.amount,
     &paychan.left_bill.hacsat.satoshi.to_real(),
     &paychan.right_bill.hacsat.satoshi.to_real(),
-    is_final_closed)
+    false)
 }
 
 
