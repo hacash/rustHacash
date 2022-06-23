@@ -1,6 +1,7 @@
 pub const DIAMOND_NAME_VALID_CHARS: &[u8; 16]  = b"WTYUIAHXVMEKBSZN";
 
 pub type DiamondName = Fixedbytes6;
+
 pub type DiamondNumber = Uint3;
 
 impl DiamondName {

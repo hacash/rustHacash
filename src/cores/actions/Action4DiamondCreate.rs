@@ -1,4 +1,15 @@
 
+// start with the 20001st diamond and enable the 32-bit MSG byte
+pub const DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE: DiamondNumber = DiamondNumber::from(2_0000);
+
+// define special field
+pub_type_prefix_value_check_impl_Field_trait!(
+    DiamondCreateExtendMsg, 
+    number, DiamondNumber, Fixedbytes32,
+    3+32+8+21, { number.get_value() as u64 > DIAMOND_ABOVE_NUMBER_OF_CREATE_BY_CUSTOM_MESSAGE.value() as u64 }
+);
+
+
 // create struct Action4DiamondCreate
 action_create_struct_for_common_items!(
     ACTION_KIND_4, Action4DiamondCreate,
