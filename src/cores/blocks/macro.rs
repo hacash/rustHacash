@@ -66,11 +66,22 @@ impl Action for $class {
 
 
 macro_rules! impl_Field_for_common_block {
-    ( $blockname: ident, $( $item:ident ),+ ) => (
+    ( $blockname: ident, $( $item:ident, $vtype:ty, )+ ) => (
 
 
 
-impl Field for BlockV1 {
+impl Field for $blockname {
+
+    fn new() -> $blockname {
+        $blockname {
+            $(
+                $item: <$vtype>::new(),
+            )+
+            // body
+            transactions: Vec::new(),
+        }
+    }
+
 
     fn serialize(&self) -> Vec<u8> {
         let mut bts = vec![];

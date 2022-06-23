@@ -99,6 +99,12 @@ impl SubAssign<f32> for $name {
 
 impl Field for $name {
 
+    fn new() -> $name {
+        $name{
+            value: 0 as $vty,
+        }
+    }
+
     fn serialize(&self) -> Vec<u8> {
         <$vty>::to_be_bytes(self.value).to_vec()
     }
@@ -126,12 +132,6 @@ impl $name {
 
     const fn size() -> usize {
         $size
-    }
-
-    pub fn new() -> $name {
-        $name{
-            value: 0 as $vty,
-        }
     }
 
     pub fn from(v: $vty) -> $name {

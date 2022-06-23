@@ -7,6 +7,7 @@ include!("./coinbase.rs");
 include!("./diamonds.rs");
 include!("./satoshi.rs");
 include!("./optladdr.rs");
+include!("./sign.rs");
 include!("./signs.rs");
 include!("./signcheck.rs");
 

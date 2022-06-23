@@ -21,14 +21,6 @@ pub struct Amount {
 }
 
 impl Amount {
-    pub fn new() -> Amount {
-        Amount{
-            unit: 0,
-            dist: 0,
-            byte: Vec::new(),
-        }
-    }
-
     // parse function
     pub_fn_field_parse_wrap_return!(Amount, {Amount::new()});
 
@@ -47,6 +39,15 @@ impl fmt::Debug for Amount {
 // impl Copy for Amount {}
 
 impl Field for Amount {
+
+    fn new() -> Amount {
+        Amount{
+            unit: 0,
+            dist: 0,
+            byte: Vec::new(),
+        }
+    }
+
 
     fn serialize(&self) -> Vec<u8> {
         let mut resv = vec!(self.unit, self.dist as u8);

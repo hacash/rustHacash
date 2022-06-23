@@ -17,6 +17,12 @@ impl Index<usize> for $name {
 
 impl Field for $name {
 
+    fn new() -> $name {
+        $name{
+            bytes: [0u8; $size],
+        }
+    }
+
     fn serialize(&self) -> Vec<u8> {
         if $size != self.bytes.len() {
             panic!("{}.serialize size not match.", $tip)
@@ -50,12 +56,6 @@ impl $name {
 
     const fn size() -> usize {
         $size
-    }
-
-    pub fn new() -> $name {
-        $name{
-            bytes: [0u8; $size],
-        }
     }
 
     pub fn value(&self) -> [u8; $size] {

@@ -6,12 +6,19 @@ pub const STRINGTRIM64_SIZE: usize = 64;
 macro_rules! create_stringtrim_struct_and_impl{
     ($tip:expr, $name:ident, $size:expr) => (
 
+#[derive(Clone)]
 pub struct $name {
     bytes: [u8; $size],
 }
 
 
 impl Field for $name {
+
+    fn new() -> $name {
+        $name{
+            bytes: [0u8; $size],
+        }
+    }
 
     fn serialize(&self) -> Vec<u8> {
         self.bytes.to_vec()
@@ -49,12 +56,6 @@ impl $name {
         v.as_str().trim().to_string()
     }
     
-    pub fn new() -> $name {
-        $name{
-            bytes: [0u8; $size],
-        }
-    }
-    
     pub fn from(stuff: &String) -> $name {
         let bytes = stuff.clone().into_bytes();
         let lv = bytes.len();
@@ -77,14 +78,6 @@ impl $name {
 
 }
 
-
-impl Clone for $name {
-    fn clone(&self) -> $name {
-        $name{
-            bytes: self.bytes.clone(),
-        }
-    }
-}
 
 
     )

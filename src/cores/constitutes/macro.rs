@@ -1,53 +1,5 @@
 
 
-macro_rules! pub_struct_define_for_common{
-    ($class: ident, $( $value: ident, $value_type: ty,)+) => (
-
-// 
-pub struct $class {
-    $(
-        pub $value: $value_type,
-    )+
-}
-
-impl $class {
-
-    pub fn new() -> $class {
-        $class {
-            $(
-                $value: <$value_type>::new(),
-            )+
-        }
-    }
-
-    // parse function
-    pub_fn_field_parse_wrap_return!($class, {$class::new()});
-
-}
-
-
-impl Clone for $class {
-    fn clone(&self) -> $class {
-        $class {
-            $(
-                $value: self.$value.clone(),
-            )+
-        }
-    }
-}
-
-
-// impl Field for Sign
-impl_Field_trait_for_common!(0, $class, 
-    $(
-        $value,
-    )+
-);
-
-
-    )
-}
-
 
 
 /******************************************* */
@@ -57,7 +9,7 @@ impl_Field_trait_for_common!(0, $class,
 macro_rules! pub_struct_define_for_if_exist{
     ($class: ident, $value: ident, $value_type: ty) => (
 
-// if have $value
+#[derive(Clone)]
 pub struct $class {
 	exists: Bool,
 	$value: Option<$value_type>,
@@ -65,13 +17,6 @@ pub struct $class {
 
 
 impl $class {
-
-    pub fn new() -> $class {
-        $class {
-            exists: Bool::create(false),
-            $value: None,
-        }
-    }
 
     pub fn must(v: $value_type) -> $class {
         $class {
@@ -96,17 +41,6 @@ impl $class {
 
 }
 
-
-impl Clone for $class {
-    fn clone(&self) -> $class {
-        $class {
-            exists: self.exists.clone(),
-            $value: self.$value.clone(),
-        }
-    }
-}
-
-
 // impl Field for $class
 impl_Field_trait_if_exist!($class, 
     exists,
@@ -130,6 +64,7 @@ macro_rules! pub_struct_define_for_list{
     ($class: ident, $count: ident, $count_type: ty, $value: ident, $value_type: ty) => (
 
 
+#[derive(Clone)]
 pub struct $class  {
 	$count: $count_type,
 	$value: Vec<$value_type>,
@@ -137,13 +72,6 @@ pub struct $class  {
 
 
 impl $class {
-
-    pub fn new() -> $class {
-        $class {
-            $count: <$count_type>::new(),
-            $value: Vec::new(),
-        }
-    }
 
     pub fn get_count(&self) -> &$count_type {
         &self.$count
@@ -156,16 +84,6 @@ impl $class {
     // parse function
     pub_fn_field_parse_wrap_return!($class, {$class::new()});
 
-}
-
-
-impl Clone for $class {
-    fn clone(&self) -> $class {
-        $class {
-            $count: self.$count.clone(),
-            $value: self.$value.clone(),
-        }
-    }
 }
 
 

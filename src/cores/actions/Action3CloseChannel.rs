@@ -1,13 +1,13 @@
 
-// create struct Action3ClosePaymentChannel
+// create struct Action3CloseChannel
 action_create_struct_for_common_items!(
-    ACTION_KIND_3, Action3ClosePaymentChannel,
+    ACTION_KIND_3, Action3CloseChannel,
 
 	channel_id    , ChannelId, 
 );
 
 
-impl_Action_trait_for_common_single!( Action3ClosePaymentChannel, self, state, trs, {
+impl_Action_trait_for_common_single!( Action3CloseChannel, self, state, trs, {
     // check status
     let cid = &self.channel_id;
     let chan = state.get_channel(cid) ? ;

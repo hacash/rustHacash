@@ -1,7 +1,7 @@
 
-// create struct Action2OpenPaymentChannel
+// create struct Action2OpenChannel
 action_create_struct_for_common_items!(
-    ACTION_KIND_2, Action2OpenPaymentChannel,
+    ACTION_KIND_2, Action2OpenChannel,
 
 	channel_id    , ChannelId, 
     left_bill      , AddrHac,
@@ -9,7 +9,7 @@ action_create_struct_for_common_items!(
 );
 
 
-impl_Action_trait_for_common!( Action2OpenPaymentChannel, self,
+impl_Action_trait_for_common!( Action2OpenChannel, self,
     { false }, // is_burning_90_persent_tx_fee
 
     {   // request_sign_addresses

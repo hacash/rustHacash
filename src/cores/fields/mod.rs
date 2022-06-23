@@ -24,7 +24,6 @@ include!("./address.rs");
 include!("./diamond.rs");
 include!("./hash.rs");
 include!("./height.rs");
-include!("./sign.rs");
 
 include!("./satoshi.rs");
 

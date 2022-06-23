@@ -162,6 +162,12 @@ impl SubAssign<i32> for $name {
 
 impl Field for $name {
 
+    fn new() -> $name {
+        $name {
+            value: 0,
+        }
+    }
+
     fn serialize(&self) -> Vec<u8> {
         let bts = <$vty>::to_be_bytes(self.value);
         let drop_zore = $size_vl - $size;
@@ -201,12 +207,6 @@ impl $name {
 
     const fn size() -> usize {
         $size
-    }
-
-    pub fn new() -> $name {
-        $name{
-            value: 0,
-        }
     }
 
     pub const fn from(v: $vty) -> $name {

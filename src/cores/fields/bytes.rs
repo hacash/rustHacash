@@ -4,6 +4,7 @@
 macro_rules! create_bytes_struct_and_impl{
     ($tip:expr, $name:ident, $lenty:ty, $size_max:expr) => (
 
+#[derive(Clone)]
 pub struct $name {
     len: $lenty,
     bytes: Vec<u8>,
@@ -11,6 +12,13 @@ pub struct $name {
 
 
 impl Field for $name {
+
+    fn new() -> $name {
+        $name{
+            len: <$lenty>::new(),
+            bytes: vec![],
+        }
+    }
 
     fn serialize(&self) -> Vec<u8> {
         let lv = self.size();
@@ -54,13 +62,6 @@ impl Field for $name {
 
 impl $name {
 
-    pub fn new() -> $name {
-        $name{
-            len: <$lenty>::new(),
-            bytes: vec![],
-        }
-    }
-
     pub fn to_bytes(&self) -> Vec<u8> {
         self.bytes.clone()
     }
@@ -85,15 +86,6 @@ impl $name {
 
 }
 
-
-impl Clone for $name {
-    fn clone(&self) -> $name {
-        $name{
-            len: self.len.clone(),
-            bytes: self.bytes.clone(),
-        }
-    }
-}
 
     )
 }

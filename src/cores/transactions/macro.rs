@@ -49,30 +49,18 @@ pub struct $class {
 }
 
 impl_Field_trait_for_common!( 0, $class,
-    ty,
-    timestamp,
-    address, 
-    fee,
-    actions,
-    signs,
-    multisign_mark,
+    ty, Uint1,
+    timestamp, BlockTxTimestamp,
+    address, Address,
+    fee, Amount,
+    actions, DynListActionMax65535,
+    signs, SignListMax65535,
+    multisign_mark, Uint2,
 );
 
 
 
 impl $class {
-
-    pub fn new() -> $class {
-        $class {
-            ty: Uint1::new(),
-            timestamp: BlockTxTimestamp::new(),
-            address: Address::new(),
-            fee: Amount::new(),
-            actions: DynListActionMax65535::new(),
-            signs: SignListMax65535::new(),
-            multisign_mark: Uint2::new()
-        }
-    }
 
     fn serialize_for_sign(&self) -> Vec<u8> {
         field_serialize_items_concat!(

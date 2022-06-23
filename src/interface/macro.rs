@@ -88,10 +88,18 @@ macro_rules! field_describe_items_wrap{
 
 #[macro_export] 
 macro_rules! impl_Field_trait_for_common{
-    ($cln: expr, $class: ident, $( $name: ident, )+) => (
+    ($cln: expr, $class: ident, $( $name: ident, $vtype: ty, )+) => (
 
 
 impl Field for $class {
+
+    fn new() -> $class {
+        $class {
+            $(
+                $name: <$vtype>::new(),
+            )+
+        }
+    }
 
     fn serialize(&self) -> Vec<u8> {
         field_serialize_items_concat!($( self.$name ),*)
@@ -123,6 +131,13 @@ macro_rules! impl_Field_trait_if_exist{
 
 
 impl Field for $class {
+
+    fn new() -> $class {
+        $class {
+            $mark: Bool::create(false),
+            $value: None,
+        }
+    }
 
     fn serialize(&self) -> Vec<u8> {
         let mut resdt = self.$mark.serialize();
@@ -180,6 +195,13 @@ macro_rules! impl_Field_trait_for_list{
 
 impl Field for $class {
 
+    fn new() -> $class {
+        $class {
+            $count: <$count_type>::new(),
+            $vec_list: Vec::new(),
+        }
+    }
+
     fn serialize(&self) -> Vec<u8> {
         let mut resdt = self.$count.serialize();
         let count = self.$count.value() as usize;
@@ -230,6 +252,38 @@ impl Field for $class {
 }
 
 
+/**************************** */
+
+
+macro_rules! pub_struct_field_define_for_common{
+    ($class: ident, $( $value: ident, $value_type: ty,)+) => (
+
+// 
+#[derive(Clone)]
+pub struct $class {
+    $(
+        pub $value: $value_type,
+    )+
+}
+
+impl $class {
+
+    // parse function
+    pub_fn_field_parse_wrap_return!($class, {$class::new()});
+
+}
+
+
+// impl Field for Sign
+impl_Field_trait_for_common!(0, $class, 
+    $(
+        $value, $value_type,
+    )+
+);
+
+
+    )
+}
 
 
 

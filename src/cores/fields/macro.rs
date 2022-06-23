@@ -10,3 +10,4 @@ macro_rules! parse_move_seek_or_buf_too_short{
         }
     })
 }
+

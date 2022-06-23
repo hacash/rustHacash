@@ -4,6 +4,9 @@ pub mod account;
 pub mod fields;
 
 #[macro_use]
+pub mod fieldspec;
+
+#[macro_use]
 pub mod constitutes;
 
 #[macro_use]

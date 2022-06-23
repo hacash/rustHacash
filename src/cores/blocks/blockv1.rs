@@ -3,54 +3,38 @@
 pub struct BlockV1 {
 
 	// head
-	version: Uint1,
-	height: BlockHeight,
-	timestamp: BlockTxTimestamp,
-	prev_hash: Hash,
-	mrkl_root: Hash,
-	transaction_count: Uint4,
+	version            : Uint1,
+	height             : BlockHeight,
+	timestamp          : BlockTxTimestamp,
+	prev_hash          : Hash,
+	mrkl_root          : Hash,
+	transaction_count  : Uint4,
 
 	// meta
-	nonce: Fixedbytes4, // Mining random value
-	difficulty: Uint4, // Target difficulty value
-	witness_stage: Fixedbytes2, // Witness quantity level
+	nonce              : Fixedbytes4, // Mining random value
+	difficulty         : Uint4, // Target difficulty value
+	witness_stage      : Fixedbytes2, // Witness quantity level
 
 	// body
-	transactions: Vec<Box<dyn Transaction>>
+	transactions       : Vec<Box<dyn Transaction>>
 
 }
 
 
 impl_Field_for_common_block!( BlockV1,
-    version,
-    height,
-    timestamp, 
-    prev_hash,
-    mrkl_root,
-    transaction_count,
-    nonce,
-    difficulty,
-    witness_stage
+	version            , Uint1,
+	height             , BlockHeight,
+	timestamp          , BlockTxTimestamp,
+	prev_hash          , Hash,
+	mrkl_root          , Hash,
+	transaction_count  , Uint4,
+	nonce              , Fixedbytes4, 
+	difficulty         , Uint4, 
+	witness_stage      , Fixedbytes2, 
+
 );
 
 impl BlockV1 {
-
-    pub fn new() -> BlockV1 {
-        BlockV1 {
-            version: Uint1::new(),
-            height: BlockHeight::new(),
-            timestamp: BlockTxTimestamp::new(),
-            prev_hash: Hash::new(),
-            mrkl_root: Hash::new(),
-            transaction_count: Uint4::new(),
-            // meta
-            nonce: Fixedbytes4::new(),
-            difficulty: Uint4::new(),
-            witness_stage: Fixedbytes2::new(),
-            // body
-            transactions: Vec::new(),
-        }
-    }
 
     pub fn _serialize_head(&self) -> Vec<u8> {
         field_serialize_items_concat!(

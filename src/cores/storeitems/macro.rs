@@ -59,7 +59,7 @@ impl Clone for $class {
 // impl Field for $class
 impl_Field_trait_for_common!(0, $class, 
     $(
-        $name,
+        $name, $type,
     )+
 );
 

@@ -4,6 +4,8 @@
 macro_rules! create_message_struct_and_impl{
     ($tip:expr, $name:ident, $lenty:ty, $size_max:expr) => (
 
+     
+#[derive(Clone)]   
 pub struct $name {
     len: $lenty,
     msg: Vec<u8>,
@@ -11,6 +13,13 @@ pub struct $name {
 
 
 impl Field for $name {
+
+    fn new() -> $name {
+        $name{
+            len: <$lenty>::from(0),
+            msg: vec![],
+        }
+    }
 
     fn serialize(&self) -> Vec<u8> {
         let lv = self.size();

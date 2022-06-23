@@ -1,7 +1,7 @@
 
 
 // LendingRedeemedData
-pub_struct_define_for_common!(LendingRedeemedData, 
+pub_struct_field_define_for_common!(LendingRedeemedData, 
 	// data if redeemed
 	block_height                  , BlockHeight     , // Block height at redemption
 	amount                        , Amount          , // Redemption amount

@@ -45,6 +45,13 @@ impl $class {
 
 impl Field for $class {
 
+    fn new() -> $class {
+        $class {
+            count: <$county>::from(0),
+            vlist: Vec::new(),
+        }
+    }
+
     fn serialize(&self) -> Vec<u8> {
         let mut bts = vec![];
         let bt1 = self.count.serialize();

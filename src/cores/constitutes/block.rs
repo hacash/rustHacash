@@ -1,7 +1,7 @@
 
 
 // BlockPtr
-pub_struct_define_for_common!(BlockPtr, 
+pub_struct_field_define_for_common!(BlockPtr, 
 	// ptr
 	height                , BlockHeight,
 	hash                  , Hash,
@@ -9,7 +9,7 @@ pub_struct_define_for_common!(BlockPtr,
 
 
 // BlockHead
-pub_struct_define_for_common!(BlockHead, 
+pub_struct_field_define_for_common!(BlockHead, 
 	// head
 	version               , Uint1,
 	height                , BlockHeight,

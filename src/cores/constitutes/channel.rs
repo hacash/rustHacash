@@ -1,7 +1,7 @@
 
 
 // ChallengePeriodData
-pub_struct_define_for_common!(ChallengePeriodData, 
+pub_struct_field_define_for_common!(ChallengePeriodData, 
 	// Status = 1 challenge period save data
 	is_have_challenge_log             , Bool             , // Record challenge data log
 	challenge_launch_height           , BlockHeight      , // Block height at the beginning of the challenge
@@ -19,7 +19,7 @@ pub_struct_define_for_if_exist!(ChallengePeriodDataOptional, challenge, Challeng
 
 
 // FinalDistributionData
-pub_struct_define_for_common!(ClosedDistributionData, 
+pub_struct_field_define_for_common!(ClosedDistributionData, 
 	// Status = 2 or 3 
 	left_bill                       , HacSat        , 
 );

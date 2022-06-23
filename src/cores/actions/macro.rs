@@ -61,15 +61,6 @@ pub struct $class {
 
 impl $class {
 
-    pub fn new() -> $class {
-        $class {
-            kind: Uint2::new(),
-            $(
-                $k: <$ty>::new()
-            ),*
-        }
-    }
-
     const fn get_kind() -> u16 {
         $kindid
     }
@@ -82,8 +73,9 @@ impl $class {
 
 // impl Field for $class
 impl_Field_trait_for_common!(0, $class, 
+    kind, Uint2,
     $(
-        $k,
+        $k, $ty,
     )+
 );
 

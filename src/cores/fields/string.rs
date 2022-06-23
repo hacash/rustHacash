@@ -4,6 +4,7 @@
 macro_rules! create_string_struct_and_impl{
     ($tip:expr, $name:ident, $lenty:ty, $size_max:expr) => (
 
+#[derive(Clone)]
 pub struct $name {
     len: $lenty,
     str: Vec<u8>,
@@ -11,6 +12,13 @@ pub struct $name {
 
 
 impl Field for $name {
+
+    fn new() -> $name {
+        $name{
+            len: <$lenty>::from(0),
+            str: vec![],
+        }
+    }
 
     fn serialize(&self) -> Vec<u8> {
         let lv = self.size();
@@ -52,13 +60,6 @@ impl Field for $name {
 
 impl $name {
 
-    pub fn new() -> $name {
-        $name{
-            len: <$lenty>::new(),
-            str: vec![],
-        }
-    }
-
     pub fn to_string(&self) -> String {
         String::from_utf8(self.str.clone()).unwrap()
     }
@@ -84,15 +85,6 @@ impl $name {
 
 }
 
-
-impl Clone for $name {
-    fn clone(&self) -> $name {
-        $name{
-            len: self.len.clone(),
-            str: self.str.clone(),
-        }
-    }
-}
 
     )
 }
