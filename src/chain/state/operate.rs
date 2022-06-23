@@ -68,23 +68,23 @@ impl ChainStateOperate for ChainStateInstance {
 
     $(
     concat_idents!(fn_set = set_, $name1 {
-    fn fn_set(&mut self, item: &$vtype1) -> Result<bool, String> {
+    fn fn_set(&mut self, item: &$vtype1) -> Result<(), String> {
         let mkey = vec![$kfix1];
         let vdts = item.serialize();
         let putres = self.leveldb.borrow_mut().put(&mkey, &vdts);
         match putres {
-            Ok(_) => Ok(true),
+            Ok(_) => Ok(()),
             Err(e) => Err(e.to_string()),
         }
     }
     });
     concat_idents!(fn_del = del_, $name1 {
-    fn fn_del(&mut self) -> Result<bool, String> {
+    fn fn_del(&mut self) -> Result<(), String> {
         let mkey = vec![$kfix1];
         let delres = self.leveldb.borrow_mut().delete(&mkey);
         self.mark_del_key(mkey); // mark del
         match delres {
-            Ok(_) => Ok(true),
+            Ok(_) => Ok(()),
             Err(e) => Err(e.to_string()),
         }
     }
@@ -93,23 +93,23 @@ impl ChainStateOperate for ChainStateInstance {
     
     $(
     concat_idents!(fn_set = set_, $name2 {
-    fn fn_set(&mut self, $name2: &$keyty2, item: &$vtype2) -> Result<bool, String> {
+    fn fn_set(&mut self, $name2: &$keyty2, item: &$vtype2) -> Result<(), String> {
         let mkey = ChainStateInstance::makey($kfix2, $name2.serialize());
         let vdts = item.serialize();
         let putres = self.leveldb.borrow_mut().put(&mkey, &vdts);
         match putres {
-            Ok(_) => Ok(true),
+            Ok(_) => Ok(()),
             Err(e) => Err(e.to_string()),
         }
     }
     });
     concat_idents!(fn_del = del_, $name2 {
-    fn fn_del(&mut self, $name2: &$keyty2) -> Result<bool, String> {
+    fn fn_del(&mut self, $name2: &$keyty2) -> Result<(), String> {
         let mkey = ChainStateInstance::makey($kfix2, $name2.serialize());
         let delres = self.leveldb.borrow_mut().delete(&mkey);
         self.mark_del_key(mkey); // mark del
         match delres {
-            Ok(_) => Ok(true),
+            Ok(_) => Ok(()),
             Err(e) => Err(e.to_string()),
         }
     }

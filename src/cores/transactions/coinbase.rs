@@ -55,7 +55,7 @@ impl TransactionRead for TransactionCoinbase {
 impl Transaction for TransactionCoinbase {
 
 	// change chain state
-	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<bool, String> {
+	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<(), String> {
         let rwdcoin = self.get_reward();
         // send coinbase reward
         operate::hac_add(state, self.get_address(), rwdcoin) ? ;
@@ -65,7 +65,7 @@ impl Transaction for TransactionCoinbase {
         ttcount.set_block_reward( Uint8::from(ttrwd) );
         state.set_total_supply( &ttcount ) ? ;
         // ok
-        Ok(true)
+        Ok(())
     }
 
 }

@@ -29,12 +29,12 @@ pub trait BlockRead : Field {
 
 pub trait Block : BlockRead {
 
-    fn verify_all_signs(&self) -> bool {
-        false
+    fn verify_all_signs(&self) -> Result<(), String> {
+        Err("".to_string())
     }
     
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainState) -> Result<bool, String> {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState) -> Result<(), String> {
         panic!("never call this!")
     }
 

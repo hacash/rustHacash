@@ -21,7 +21,7 @@ pub_struct_define_for_if_exist!(ChallengePeriodDataOptional, challenge, Challeng
 // FinalDistributionData
 pub_struct_define_for_common!(ClosedDistributionData, 
 	// Status = 2 or 3 
-	distribution                       , HacSat        , 
+	left_bill                       , HacSat        , 
 );
 
 pub_struct_define_for_if_exist!(ClosedDistributionDataOptional, closed_distribution, ClosedDistributionData);

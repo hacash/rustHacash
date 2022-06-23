@@ -31,18 +31,18 @@ pub trait ChainStateOperate : ChainStateRead {
 
     $(
         concat_idents!(fn_set_1 = set_, $name1 {
-            fn fn_set_1(&mut self, _: &$vtype1) -> Result<bool, String> { Ok(false) }
+            fn fn_set_1(&mut self, _: &$vtype1) -> Result<(), String> { Ok(()) }
         });
         concat_idents!(fn_del_1 = del_, $name1 {
-            fn fn_del_1(&mut self) -> Result<bool, String> { Ok(false) }
+            fn fn_del_1(&mut self) -> Result<(), String> { Ok(()) }
         });
     )+
     $(
         concat_idents!(fn_set_2 = set_, $name2 {
-            fn fn_set_2(&mut self, _: &$keyty2, _: &$vtype2) -> Result<bool, String> { Ok(false) }
+            fn fn_set_2(&mut self, _: &$keyty2, _: &$vtype2) -> Result<(), String> { Ok(()) }
         });
         concat_idents!(fn_del_2 = del_, $name2 {
-            fn fn_del_2(&mut self, _: &$keyty2) -> Result<bool, String> { Ok(false) }
+            fn fn_del_2(&mut self, _: &$keyty2) -> Result<(), String> { Ok(()) }
         });
     )+
 }
@@ -96,7 +96,7 @@ pub trait ChainState : ChainStateOperate {
 	// Judgment type
 	fn is_immutable(&self) -> bool { false }
 	// Save on disk
-	fn immutable_write_to_disk(&mut self) -> Option<String> { None }
+	fn immutable_write_to_disk(&mut self) -> Result<(), String> { Ok(()) }
 	// Get parent status
 	fn get_parent(&self) -> Option<WeakArcMutexDynChainState> { None }
 	// Get all child States
@@ -109,7 +109,7 @@ pub trait ChainState : ChainStateOperate {
     // fn fork_sub_child(_: ArcMutexDynChainState) -> ArcMutexDynChainState;
 
     // copy cover
-	fn traversal_copy(&mut self, _: &ArcMutexDynChainState) -> Option<String> { None }
+	fn traversal_copy(&mut self, _: &ArcMutexDynChainState) -> Result<(), String> { Ok(()) }
 
 	//GetReferBlock() (uint64, fields.Hash)
 	fn search_state_by_block_hash(&self, _: &Hash) -> Result<Option<ArcMutexDynChainState>, String> { Ok(None) }

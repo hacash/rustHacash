@@ -147,17 +147,15 @@ impl BlockRead for BlockV1 {
 
 impl Block for BlockV1 {
 
-    fn verify_all_signs(&self) -> bool {
+    fn verify_all_signs(&self) -> Result<(), String> {
         for act in self.get_transactions() {
-            if false == act.verify_all_signs() {
-                return false // fail
-            }
+            act.verify_all_signs() ? ;
         }
-        true
+        Ok(())
     }
 
 	// change chain state
-	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<bool, String> {
+	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<(), String> {
         let txlist = self.get_transactions();
         let txlen = txlist.len();
         if txlen < 1 {
@@ -209,7 +207,7 @@ impl Block for BlockV1 {
             ttcount.set_burning_fee( Float8::from(rlbfe) );
             state.set_total_supply( &ttcount ) ? ;
         }
-        Ok(true)
+        Ok(())
     }
 
 }

@@ -21,19 +21,19 @@ pub trait BlockStore: BlockStoreRead {
     fn close(&mut self);
 
     // save
-    fn save_block(&mut self, _: &BlockBag) -> Option<String>;
+    fn save_block(&mut self, _: &BlockBag) -> Result<(), String>;
 
     // Set the block hash that the block height points to
-    fn update_set_block_hash_refer_to_height(&mut self,_: &BlockHeight, _: &Hash) -> Option<String>;
+    fn update_set_block_hash_refer_to_height(&mut self,_: &BlockHeight, _: &Hash) -> Result<(), String>;
 
     // tx
     //ReadTransactionBytesByHash(fields.Hash) (uint64, []byte, error)
 
     // diamond
-    fn save_diamond(&mut self,_: &DiamondSmeltItem) -> Option<String>;
+    fn save_diamond(&mut self,_: &DiamondSmeltItem) -> Result<(), String>;
 
     // Set the diamond name pointed by the diamond number
-    fn update_set_diamond_name_refer_to_number(&mut self,_: &DiamondNumber, _: &DiamondName) -> Option<String>;
+    fn update_set_diamond_name_refer_to_number(&mut self,_: &DiamondNumber, _: &DiamondName) -> Result<(), String>;
 
     // btc move log
     // fn RunDownLoadBTCMoveLog();

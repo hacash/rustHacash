@@ -2,4 +2,6 @@
 actions_kind_define_parse_func_include!(
     ACTION_KIND_1  , 1  , Action1HacTrs                 ,
     ACTION_KIND_2  , 2  , Action2OpenPaymentChannel     ,
+    ACTION_KIND_3  , 3  , Action3ClosePaymentChannel    ,
+    
 );

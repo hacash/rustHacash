@@ -5,6 +5,11 @@ pub const CHANNEL_STATUS_CHALLENGING              : Uint1 = Uint1::from(1); // C
 pub const CHANNEL_STATUS_AGREEMENT_CLOSED         : Uint1 = Uint1::from(2); // After negotiation is closed, reuse can be enabled again
 pub const CHANNEL_STATUS_FINAL_ARBITRATION_CLOSED : Uint1 = Uint1::from(3); // Final arbitration closed, never reusable
 
+// Interest attribution of 1% annualized: 0 Press end to assign 1 All to left 2 Give it all right
+pub const CHANNEL_INTEREST_ATTRIBUTION_TYPE_DEFAULT          : Uint1 = Uint1::from(0); // default 
+pub const CHANNEL_INTEREST_ATTRIBUTION_TYPE_ALL_TO_LEFT      : Uint1 = Uint1::from(1); // give all to left 
+pub const CHANNEL_INTEREST_ATTRIBUTION_TYPE_ALL_TO_RIGHT     : Uint1 = Uint1::from(2); // give all to right  
+
 // pub struct
 pub_struct_store_item_define_common!(ChannelItem, 
 
@@ -25,4 +30,5 @@ pub_struct_store_item_define_common!(ChannelItem,
     if_distribution               , ClosedDistributionDataOptional ,
 
 );
+
 

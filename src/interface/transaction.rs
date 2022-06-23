@@ -23,7 +23,7 @@ pub trait TransactionRead : Field {
 
     fn is_burning_90_persent_tx_fee(&self) -> bool { false }
 
-    fn request_sign_addresses(&self) -> HashMap<Address, bool> { HashMap::new() }
+    fn request_sign_addresses(&self) -> HashMap<Address, ()> { HashMap::new() }
 
 
 }
@@ -31,11 +31,12 @@ pub trait TransactionRead : Field {
 
 pub trait Transaction : TransactionRead {
 
-    fn verify_all_signs(&self) -> bool { false }
-    fn verify_target_signs(&self, _: &HashMap<Address, bool>) -> bool { false }
+    fn verify_all_signs(&self) -> Result<(), String> { Err("".to_string()) }
+    fn verify_target_signs(&self, _: &HashMap<Address, ()>) -> Result<(), String> { Err("".to_string()) }
+    fn verify_need_signs(&self, _: &Vec<Address>) -> Result<(), String> { Err("".to_string()) }
 
 	// change chain state
-	fn write_in_chain_state(&self, _: &mut dyn ChainState) -> Result<bool, String> {
+	fn write_in_chain_state(&self, _: &mut dyn ChainState) -> Result<(), String> {
         panic_never_call_this!()
     }
     

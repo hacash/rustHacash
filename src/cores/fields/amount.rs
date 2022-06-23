@@ -13,6 +13,7 @@ macro_rules! amount_check_data_len{
     )
 }
 
+#[derive(Clone)]
 pub struct Amount {
 	unit: u8,
 	dist: i8,
@@ -33,7 +34,6 @@ impl Amount {
 
 }
 
-
 impl fmt::Debug for Amount {
 
     fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
@@ -43,15 +43,6 @@ impl fmt::Debug for Amount {
 }
 
 
-impl Clone for Amount {
-    fn clone(&self) -> Amount {
-        Amount{
-            unit: self.unit,
-            dist: self.dist,
-            byte: self.byte.clone(),
-        }
-    }
-}
 
 // impl Copy for Amount {}
 
@@ -115,16 +106,28 @@ impl Amount {
         amt
     }
 
-    pub fn from_i64(mei: i64, unit: u8) -> Result<Amount, String> {
+    pub fn from_unit_byte(unit: u8, byte: Vec<u8>) -> Result<Amount, String> {
+        let bl = byte.len();
+        if bl > 127 {
+            return Err("amount bytes len overflow 127.".to_string())
+        }
+        Ok(Amount{
+            unit: unit,
+            dist: bl as i8,
+            byte: byte,
+        })
+    }
+
+    pub fn from_i64(num: i64, unit: u8) -> Result<Amount, String> {
         let mut amt = Amount::new();
-        if mei == 0 {
+        if num == 0 {
             return Ok(amt);
         }
-        if mei % 10 == 0 {
-            return Err(format!("Amount.from_mei_i64 `{}` format error.", mei))
+        if num % 10 == 0 {
+            return Err(format!("Amount.from_mei_i64 `{}` format error.", num))
         }
         // parse
-        let big: BigInt = FromPrimitive::from_i64(mei).unwrap();
+        let big: BigInt = FromPrimitive::from_i64(num).unwrap();
         let (sign, bigbts) = big.to_bytes_be();
         let dlen = bigbts.len();
         if dlen > 127 {
@@ -338,6 +341,12 @@ impl Amount {
     pub fn unit(&self) -> u8 {
         self.unit
     }
+    pub fn dist(&self) -> i8 {
+        self.dist
+    }
+    pub fn byte(&self) -> &Vec<u8> {
+        &self.byte
+    }
 
     pub fn unit_sub(&mut self, v: u8) {
         if v > self.unit {
@@ -413,6 +422,18 @@ impl Amount {
         }
     }
 
+    pub fn more_or_equal(&self, amt: &Amount) -> bool {
+        if self.equal(amt) {
+            return true
+        }
+        let var1 = self.to_bigint();
+        let var2 = amt.to_bigint();
+        match var1.cmp( &var2 ) {
+            Less => false,
+            _ => true,
+        }
+    }
+
     pub fn less_than(&self, amt: &Amount) -> bool {
         if self.equal(amt) {
             return false
@@ -424,6 +445,20 @@ impl Amount {
             _ => false,
         }
     }
+
+    pub fn less_or_equal(&self, amt: &Amount) -> bool {
+        if self.equal(amt) {
+            return true
+        }
+        let var1 = self.to_bigint();
+        let var2 = amt.to_bigint();
+        match var1.cmp( &var2 ) {
+            Greater => false,
+            _ => true,
+        }
+    }
+
+
 
 }
 

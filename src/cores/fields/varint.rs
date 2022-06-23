@@ -20,43 +20,144 @@ pub const UINT8_SIZE_VL: usize = 8;
 
 
 
-
 macro_rules! create_varint_struct_and_impl{
     ($tip:expr, $name:ident, $vty:ty, $size:expr, $size_vl:expr) => (
 
-#[derive(Hash, Clone, PartialEq, Eq)]
+#[derive(Hash, Copy, Clone, PartialEq, Eq)]
 pub struct $name {
     value: $vty,
 }
 
+impl PartialOrd for $name {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for $name {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.value.cmp(&other.value)
+    }
+}
+
+
 
 impl Add for $name {
     type Output = Self;
+    #[inline]
     fn add(self, other: Self) -> Self {
-        $name {value: self.value + other.value}
+        Self {value: self.value + other.value}
     }
 }
 
 impl Sub for $name {
-    type Output = $name;
-    fn sub(self, other: $name) -> $name {
-        $name {value: self.value - other.value}
+    type Output = Self;
+    #[inline]
+    fn sub(self, other: Self) -> Self {
+        Self {value: self.value - other.value}
     }
 }
 
 impl Mul for $name {
-    type Output = $name;
-    fn mul(self, other: $name) -> $name {
-        $name {value: self.value * other.value}
+    type Output = Self;
+    #[inline]
+    fn mul(self, other: Self) -> Self {
+        Self {value: self.value * other.value}
     }
 }
 
 impl Div for $name {
-    type Output = $name;
-    fn div(self, other: $name) -> $name {
-        $name {value: self.value / other.value}
+    type Output = Self;
+    #[inline]
+    fn div(self, other: Self) -> Self {
+        Self {value: self.value / other.value}
     }
 }
+
+impl AddAssign for $name {
+    #[inline]
+    fn add_assign(&mut self, other: Self) {
+        self.value += other.value;
+    }
+}
+
+impl SubAssign for $name {
+    #[inline]
+    fn sub_assign(&mut self, other: Self) {
+        self.value -= other.value;
+    }
+}
+
+impl MulAssign for $name {
+    #[inline]
+    fn mul_assign(&mut self, other: Self) {
+        self.value *= other.value;
+    }
+}
+
+impl DivAssign for $name {
+    #[inline]
+    fn div_assign(&mut self, other: Self) {
+        self.value /= other.value;
+    }
+}
+
+impl AddAssign<u64> for $name {
+    #[inline]
+    fn add_assign(&mut self, other: u64) {
+        self.value += other as $vty;
+    }
+}
+
+impl AddAssign<i64> for $name {
+    #[inline]
+    fn add_assign(&mut self, other: i64) {
+        self.value += other as $vty;
+    }
+}
+
+impl AddAssign<u32> for $name {
+    #[inline]
+    fn add_assign(&mut self, other: u32) {
+        self.value += other as $vty;
+    }
+}
+
+impl AddAssign<i32> for $name {
+    #[inline]
+    fn add_assign(&mut self, other: i32) {
+        self.value += other as $vty;
+    }
+}
+
+impl SubAssign<u64> for $name {
+    #[inline]
+    fn sub_assign(&mut self, other: u64) {
+        self.value -= other as $vty;
+    }
+}
+
+impl SubAssign<i64> for $name {
+    #[inline]
+    fn sub_assign(&mut self, other: i64) {
+        self.value -= other as $vty;
+    }
+}
+
+impl SubAssign<u32> for $name {
+    #[inline]
+    fn sub_assign(&mut self, other: u32) {
+        self.value -= other as $vty;
+    }
+}
+
+impl SubAssign<i32> for $name {
+    #[inline]
+    fn sub_assign(&mut self, other: i32) {
+        self.value -= other as $vty;
+    }
+}
+
 
 
 impl Field for $name {

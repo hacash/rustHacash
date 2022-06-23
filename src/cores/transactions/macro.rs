@@ -161,12 +161,12 @@ impl TransactionRead for $class {
         false
     }
 
-    fn request_sign_addresses(&self) -> HashMap<Address, bool> {
+    fn request_sign_addresses(&self) -> HashMap<Address, ()> {
         let mut needsignaddrs = HashMap::new();
-        needsignaddrs.insert(self.get_address().clone(), true);
+        needsignaddrs.insert(self.get_address().clone(), ());
         for act in self.get_actions() {
-            for (k, v) in act.request_sign_addresses() {
-                needsignaddrs.insert(k, true);
+            for (k, _) in act.request_sign_addresses() {
+                needsignaddrs.insert(k, ());
             }
         }
         needsignaddrs
@@ -178,12 +178,20 @@ impl Transaction for $class {
 
 
     // verify_all_signs
-    fn verify_all_signs(&self) -> bool {
+    fn verify_all_signs(&self) -> Result<(), String> {
         let nnsigadrs = self.request_sign_addresses();
         self.verify_target_signs(&nnsigadrs)
     }
 
-    fn verify_target_signs(&self, nnsigadrs: &HashMap<Address, bool>) -> bool {
+    fn verify_need_signs(&self, addrs: &Vec<Address>) -> Result<(), String> { 
+        let mut sigadrs = HashMap::new();
+        for adr in addrs {
+            sigadrs.insert(adr.clone(), ());
+        }
+        self.verify_target_signs(&sigadrs)
+     }
+
+    fn verify_target_signs(&self, nnsigadrs: &HashMap<Address, ()>) -> Result<(), String> {
         let txty = self.get_type();
         let hash = self.hash();
         let main_addr = self.get_address();
@@ -194,10 +202,10 @@ impl Transaction for $class {
             // all address use tx hash
             for (addr, _) in nnsigadrs {
                 if ! verify_one_sign(&hash, &addr, signs) {
-                    return false // fail
+                    return Err(format!("address {} verify signature fail", addr.to_readable())) // fail
                 }
             }
-            return true
+            return Ok(())
         }
         let hash_fee = self.hash_with_fee();
         // type 2 and other
@@ -207,14 +215,14 @@ impl Transaction for $class {
                 usehash = &hash_fee;
             }
             if ! verify_one_sign(usehash, &addr, signs) {
-                return false // fail
+                return Err(format!("address {} verify signature fail", addr.to_readable()))
             }
         }
-        true
+        return Ok(())
     }
 
 	// change chain state
-	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<bool, String> {
+	fn write_in_chain_state(&self, state: &mut dyn ChainState) -> Result<(), String> {
         let block_height = state.pending_block_height().value();
         // check bug
         if TRANSACTION_TYPE_1 == self.get_type() && block_height > 37000 {
@@ -233,7 +241,7 @@ impl Transaction for $class {
         // deduct fee
         operate::hac_sub( state, self.get_address(), self.get_fee() ) ? ;
         // ok
-        Ok(true)
+        Ok(())
     }
 
 }

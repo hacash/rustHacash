@@ -73,6 +73,13 @@ impl $class {
         }
     }
 
+    pub fn must(v: $value_type) -> $class {
+        $class {
+            exists: Bool::create(true),
+            $value: Some(v),
+        }
+    }
+
     pub fn is_exist(&self) -> bool {
         self.exists.check()
     }

@@ -1,4 +1,14 @@
 
+macro_rules! must_find{
+    ( $value:expr, $tip:expr ) => (
+        match $value {
+            None => Err(format!("{} not find", $tip)),
+            Some(a) => Ok(a),
+        }
+    )
+}
+
+
 macro_rules! actions_kind_define_parse_func_include{
     ( $( $kindid:ident, $kindv:expr, $class:ty, )+ ) => (
 
@@ -77,15 +87,13 @@ impl_Field_trait_for_common!(0, $class,
     )+
 );
 
-
-
     )
 }
 
 
 
 macro_rules! impl_Action_trait_for_common{
-    ($class: ty, $codeblock1: block, $codeblock2: block, $param_state: ident, $param_trs: ident, $param_self: tt, $codeblock3: block) => (
+    ($class: ty, $param_self:tt, $codeblock1: block, $codeblock2: block, $param_state: ident, $param_trs: ident, $codeblock3: block) => (
 
 impl Action for $class {
 
@@ -93,15 +101,19 @@ impl Action for $class {
         <$class>::get_kind()
     }
 
-    fn is_burning_90_persent_tx_fee(&self) -> bool {
+    fn is_burning_90_persent_tx_fee(&$param_self) -> bool {
         $codeblock1
     }
 
-    fn request_sign_addresses(&self) -> HashMap<Address, bool> {
-        $codeblock2
+    fn request_sign_addresses(&$param_self) -> HashMap<Address, ()> {
+        let mut addrs = HashMap::new();
+        for addr in $codeblock2 {
+            addrs.insert(addr, ());
+        }
+        addrs
     }
 
-	fn write_in_chain_state(&$param_self, $param_state: &mut dyn ChainState, $param_trs: & dyn Transaction) -> Result<bool, String> {
+	fn write_in_chain_state(&$param_self, $param_state: &mut dyn ChainState, $param_trs: & dyn Transaction) -> Result<(), String> {
         $codeblock3
     }
 
@@ -113,19 +125,19 @@ impl Action for $class {
 
 
 macro_rules! impl_Action_trait_for_common_single{
-    ($class: ty, $param_state: ident, $param_trs: ident, $param_self: tt, $codeblock3: block) => (
+    ($class: ty, $param_self: tt, $param_state: ident, $param_trs: ident, $codeblock3: block) => (
 
-    impl_Action_trait_for_common!( $class, 
+    impl_Action_trait_for_common!( $class, $param_self, 
 
         // is_burning_90_persent_tx_fee
         { false },
     
         // request_sign_addresses
-        { HashMap::new() },
+        { [] },
     
         // write_in_chain_state
         // _state &mut dyn ChainStateOperation -> Result<bool, String>
-        $param_state, $param_trs, $param_self, $codeblock3
+        $param_state, $param_trs, $codeblock3
     
     );
     

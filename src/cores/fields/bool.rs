@@ -1,7 +1,5 @@
 pub type Bool = Uint1;
 
-impl Copy for Bool {}
-
 impl Bool {
     
     pub fn set(&mut self, v: bool) {

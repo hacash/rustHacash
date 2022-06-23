@@ -4,15 +4,15 @@
 // AddrHac
 pub_struct_define_for_common!(AddrHac, 
 	address, Address,
-	hac, Amount,
+	amount, Amount,
 );
 
 
 
 // HacAndSat
 pub_struct_define_for_common!(HacSat, 
-	hac, Amount,
-	sat, SatoshiOptional,
+	amount, Amount,
+	satoshi, SatoshiOptional,
 );
 
 

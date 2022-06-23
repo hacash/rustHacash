@@ -12,7 +12,7 @@ cc = "1.0"
 [dependencies]
 hex = "0.4.3"
 num-traits = "0.2"
-num-bigint = "0.4"
+num-bigint = "0.4.3"
 rand = "0.8.5"
 libsecp256k1 = "0.7.0"
 ripemd = "0.1.1"
