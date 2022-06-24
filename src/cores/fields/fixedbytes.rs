@@ -50,6 +50,10 @@ impl Field for $name {
 
 impl $name {
 
+    pub fn to_vec(&self) -> Vec<u8> {
+        self.serialize()
+    }
+
     pub fn len(&self) -> usize {
         <$name>::size()
     }

@@ -112,9 +112,13 @@ impl TransactionRead for $class {
         fee.unit_sub(1);
         fee
     }
+
+    fn get_action_count(&self) ->&Uint2 {
+        self.actions.get_count()
+    }
+
 	fn get_actions(&self) -> &Vec<Box<dyn Action>> {
-        let list = self.actions.get_list();
-        &list
+        self.actions.get_list()
     }
 
     /* */

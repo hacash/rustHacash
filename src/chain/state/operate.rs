@@ -13,6 +13,23 @@ impl ChainStateRead for ChainStateInstance {
     fn is_debug_test_mode(&self) -> bool {
         self.mode_debug_test
     }
+    fn is_database_rebuild_mode(&self) -> bool {
+        self.mode_database_rebuild
+    }
+
+    fn pending_block_height(&self) -> BlockHeight { 
+        match &self.basis_block {
+            PenddingBasisBlock::Height(hei) => *hei,
+            PenddingBasisBlock::Blkptr(ptr) => ptr.height,
+        }
+    }
+    fn pending_block_hash(&self) -> Option<Hash> { 
+        match &self.basis_block {
+            PenddingBasisBlock::Blkptr(ptr) => Some(ptr.hash.clone()),
+            _ => None,
+        }
+    }
+
 
     $(
     concat_idents!(fn_get_1 = get_, $name1 {
@@ -128,6 +145,8 @@ impl ChainStateOperate for ChainStateInstance {
 define_chain_state_operation_instance_of_common!(
     (
         1u8   , total_supply                               , TotalSupplyItem
+        2u8   , latest_blockhead                           , BlockHead
+        3u8   , latest_diamond                             , DiamondSmeltItem
     ),(
         21u8  , tx_contain          , Hash                 , ContainTxItem
                                                                         

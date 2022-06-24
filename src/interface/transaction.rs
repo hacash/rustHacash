@@ -13,6 +13,7 @@ pub trait TransactionRead : Field {
     fn get_fee(&self) -> &Amount { panic_never_call_this!() }
     fn get_fee_of_miner_real_received(&self) -> Amount { panic_never_call_this!() }
     fn get_message(&self) -> &StringTrim16 { panic_never_call_this!() }
+    fn get_action_count(&self) ->&Uint2 { panic_never_call_this!() }
 	fn get_actions(&self) -> &Vec<Box<dyn Action>> { panic_never_call_this!() }
 
     /* */

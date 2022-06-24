@@ -2,16 +2,27 @@
 
 static CHAIN_STATE_ID_KEY_AUTO: AtomicUsize = AtomicUsize::new(0);
 
+
+enum PenddingBasisBlock {
+    Height(BlockHeight),
+    Blkptr(BlockPtr),
+}
+
+
+
+
+
 pub struct ChainStateInstance {
 
     id_key: usize,
 
     mode_debug_test: bool,
+    mode_database_rebuild: bool,
 
-    basis_block: Option<BlockPtr>,
+    basis_block: PenddingBasisBlock,
 
     leveldb: RefCell<DB>,
-    delkeys: Vec<Vec<u8>>,
+    delkeys: HashMap<Vec<u8>, ()>,
 
     parent: Option<WeakArcMutexDynChainState>,
     childs: HashMap<usize, ArcMutexDynChainState>,
@@ -36,11 +47,12 @@ impl ChainStateInstance {
         ChainStateInstance{
             id_key: ChainStateInstance::generate_id(),
             mode_debug_test: false,
-            basis_block: None,
+            mode_database_rebuild: false,
+            basis_block: PenddingBasisBlock::Height(BlockHeight::from(0)),
             parent: None,
             childs: HashMap::new(),
             leveldb: RefCell::new(db),
-            delkeys: Vec::new(),
+            delkeys: HashMap::new(),
         }
     }
 
@@ -68,12 +80,22 @@ impl ChainStateInstance {
 	pub fn fork(base: &ArcMutexDynChainState) -> ChainStateInstance { 
         let opt = rusty_leveldb::in_memory();
         let tempdb = DB::open("childstate", opt).unwrap();
+        let bsstat = base.lock().unwrap();
+        let basis_height = bsstat.pending_block_height();
+        let basis_block = match bsstat.pending_block_hash() {
+            None => PenddingBasisBlock::Height(basis_height),
+            Some(hx) => PenddingBasisBlock::Blkptr(BlockPtr{
+                height: basis_height,
+                hash: hx.clone()
+            }),
+        };
         ChainStateInstance{
             id_key: ChainStateInstance::generate_id(),
-            mode_debug_test: base.lock().unwrap().is_debug_test_mode(),
-            basis_block: None,
+            mode_debug_test: bsstat.is_debug_test_mode(),
+            mode_database_rebuild: bsstat.is_database_rebuild_mode(),
+            basis_block: basis_block,
             leveldb: RefCell::new(tempdb),
-            delkeys: Vec::new(),
+            delkeys: HashMap::new(),
             parent: Some( Arc::downgrade(base) ),
             childs: HashMap::new(),
         }
@@ -89,11 +111,11 @@ impl ChainStateInstance {
         // write state
         let _ = newblock.write_in_chain_state(&mut child) ? ;
         // set 
-        child.basis_block = Some(newblock.copy_block_ptr());
+        child.basis_block = PenddingBasisBlock::Blkptr(newblock.copy_block_ptr());
         child.parent = Some( Arc::downgrade(base) );
         let child_ptr = Arc::new(Mutex::new(child));
         let ptr2 = child_ptr.clone();
-        base.lock().unwrap().append_child( child_ptr ); // week ptr
+        base.lock().unwrap().append_child( child_ptr );
         // ok
         Ok(ptr2)
     }
@@ -107,7 +129,7 @@ impl ChainStateInstance {
 
 
     fn mark_del_key(&mut self, stuff: Vec<u8>) {
-        self.delkeys.push(stuff);
+        self.delkeys.insert(stuff, ());
     }
 
     fn makey(prefix: u8, stuff: Vec<u8>) -> Vec<u8> {

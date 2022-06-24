@@ -9,6 +9,7 @@ use crate::cores::storeitems::*;
 
 include!("hacash.rs");
 include!("satoshi.rs");
+include!("diamond.rs");
 include!("channel.rs");
 
 include!("check.rs");

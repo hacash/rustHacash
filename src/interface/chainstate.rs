@@ -12,6 +12,8 @@ macro_rules! define_chain_state_operation_of_common{
 pub trait ChainStateRead {
 
     fn is_debug_test_mode(&self) -> bool { false } // is debug mode
+    fn is_database_rebuild_mode(&self) -> bool { false } // is database rebuild mode
+
     fn pending_block_height(&self) -> BlockHeight { BlockHeight::from_u64(0) }
     fn pending_block_hash(&self) -> Option<Hash> { None }
 
@@ -60,6 +62,9 @@ pub trait ChainStateOperate : ChainStateRead {
 define_chain_state_operation_of_common!(
     (
         1u8   , total_supply                               , TotalSupplyItem
+        2u8   , latest_blockhead                           , BlockHead
+        3u8   , latest_diamond                             , DiamondSmeltItem
+        
     ),(
         21u8  , tx_contain          , Hash                 , ContainTxItem
                                                                         
@@ -92,6 +97,9 @@ pub trait ChainState : ChainStateOperate {
 	// Destruction
 	fn close(&mut self) {} // close datadir etc
 	fn destory(&mut self) {} // Destroy, including deleting all sub States, caches, status data, etc
+
+    fn set_pending_block(&mut self, _: &BlockPtr);
+    fn set_pending_block_height(&mut self, _: &BlockHeight);
 
 	// Judgment type
 	fn is_immutable(&self) -> bool { false }
