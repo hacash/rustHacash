@@ -4,12 +4,21 @@
 macro_rules! pub_type_prefix_value_check_impl_Field_trait{
     ($class: ident, $num_name: ident, $num_type: ty, $value_type: ty, $back_offset: expr, $over_check: block) => (
 
-pub struct $class<T:Clone + PartialOrd + FieldNumber, V:Field> {
+pub struct $class<T:Clone + PartialOrd + FieldNumber, V: Clone + Field> {
     $num_name: T,
     field_val: Option<V>,
 }
 
-impl<T: Clone + PartialOrd + FieldNumber, V:Field> Field for $class<T, V> {
+impl<T: Clone + PartialOrd + FieldNumber, V: Clone + Field> $class<T, V> {
+    pub fn to_real(&self) -> Option<V> {
+        match &self.field_val {
+            Some(d) => Some(d.clone()),
+            _ => None,
+        }
+    }
+}
+
+impl<T: Clone + PartialOrd + FieldNumber, V: Clone + Field> Field for $class<T, V> {
 
     fn new() -> $class<T, V> {
         $class::<T, V> { 

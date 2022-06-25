@@ -128,7 +128,3 @@ pub fn mine_diamond(number: u32, prevblockhash: &[u8; 32], nonce: &[u8; 8], addr
 
 
 
-
-
-
-

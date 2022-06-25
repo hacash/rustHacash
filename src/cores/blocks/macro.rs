@@ -27,8 +27,7 @@ macro_rules! block_version_define_parse_func_include{
     )
 }
 
-
-
+#[allow(unused_macros)]
 macro_rules! impl_Action_trait_for_common{
     ($class: ty, $codeblock1: block, $codeblock2: block, $param_state: ident, $param_store: ident, $codeblock3: block) => (
 

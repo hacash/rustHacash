@@ -1,5 +1,5 @@
 
-
+#[allow(dead_code)]
 pub struct TxBag {
     hash: Hash,
     hash_with_fee: Hash,

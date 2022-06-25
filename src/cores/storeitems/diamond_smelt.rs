@@ -8,10 +8,10 @@ pub_struct_store_item_define_common!(DiamondSmeltItem,
 	contain_block_hash        , Hash              ,
 	prev_contain_block_hash   , Hash              ,
 	miner_address             , Address           ,
-	approx_fee_offer          , Amount            ,
+	bid_fee                   , Amount            ,
 	nonce                     , Fixedbytes8       ,
-	custom_message            , Fixedbytes32      ,
-	average_bid_burn_price    , Uint2             ,
+	custom_message            , CustomMessageOptional      ,
+	average_bid_burn          , Uint2             ,
 	visual_gene               , Fixedbytes10      ,
 );
 

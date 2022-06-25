@@ -13,7 +13,8 @@ pub_struct_store_item_define_common!(TotalSupplyItem,
     channel_located_hac                       , Float8         , // float64 HAC
     channel_located_sat                       , Uint8          , // SAT
 
-    burning_fee                               , Float8         , // float64 HAC                  
+    diamond_bid_burning_fee                   , Float8         , // float64 HAC    
+    total_burning_fee                         , Float8         , // float64 HAC                  
  
     syslend_diamond                           , Uint3          ,
     syslend_diamond_loan_hac                  , Float8         , // float64 HAC

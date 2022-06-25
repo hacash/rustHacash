@@ -1,5 +1,5 @@
 
-
+#[allow(dead_code)]
 pub struct BlockBag {
     hash: Hash,
     body: Vec<u8>,

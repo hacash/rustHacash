@@ -25,6 +25,13 @@ impl $class {
         }
     }
 
+    pub fn from(ifv: Option<$value_type>) -> $class {
+        match ifv {
+            Some(v) => <$class>::must(v),
+            _ => <$class>::new(),
+        }
+    }
+
     pub fn is_exist(&self) -> bool {
         self.exists.check()
     }

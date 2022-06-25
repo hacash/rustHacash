@@ -187,8 +187,8 @@ impl Block for BlockV1 {
         if fee_total.not_equal(&fee_total_received) {
             let burnfee_blk = fee_total.sub(&fee_total_received) ? ;
             let mut ttcount = state.get_total_supply() ? ;
-            let rlbfe = ttcount.get_burning_fee().value() + burnfee_blk.to_mei_unsafe(); // total burn fee
-            ttcount.set_burning_fee( Float8::from(rlbfe) );
+            let rlbfe = ttcount.total_burning_fee.value() + burnfee_blk.to_mei_unsafe(); // total burn fee
+            ttcount.total_burning_fee = Float8::from(rlbfe);
             state.set_total_supply( &ttcount ) ? ;
         }
         Ok(())
