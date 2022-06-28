@@ -66,6 +66,11 @@ impl Field for $name {
 
 } 
 
+impl ToHex for $name {
+    fn to_hex(&self) -> String {
+        hex::encode(self.bytes)
+    }
+}
 
 impl $name {
 
@@ -92,9 +97,6 @@ impl $name {
         }
     }
 
-    pub fn to_hex(&self) -> String {
-        hex::encode(self.bytes)
-    }
 
     pub fn from( v: [u8; $size] ) -> $name {
         $name{

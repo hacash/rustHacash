@@ -7,7 +7,7 @@ use num_bigint::BigInt;
 use num_bigint::Sign::{Minus, Plus};
 use num_traits::{FromPrimitive, ToPrimitive, Num};
 
-use crate::interface::{Field, FieldNumber};
+use crate::interface::*;
 
 include!("./macro.rs");
 

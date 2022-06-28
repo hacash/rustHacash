@@ -12,3 +12,12 @@ pub trait FieldNumber : Field {
     fn get_value(&self) -> u64;
     fn set_value(&mut self, _: u64);
 }
+
+pub trait ToHex {
+    fn to_hex(&self) -> String;
+}
+
+pub trait ToVecU8 {
+    fn to_vec(&self) -> Vec<u8>;
+}
+

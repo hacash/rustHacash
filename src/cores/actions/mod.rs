@@ -11,9 +11,12 @@ use crate::cores::coinbase;
 
 use crate::x16rs;
 
+// use std::ops::Index;
 use std::collections::HashMap;
 
 include!("macro.rs");
+
+include!("util.rs");
 
 include!("define.rs");
 

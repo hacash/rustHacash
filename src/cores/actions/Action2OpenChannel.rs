@@ -3,7 +3,7 @@
 action_create_struct_for_common_items!(
     ACTION_KIND_2, Action2OpenChannel,
 
-	channel_id    , ChannelId, 
+	channel_id     , ChannelId, 
     left_bill      , AddrHac,
     right_bill     , AddrHac,
 );
@@ -28,9 +28,8 @@ impl_Action_trait_for_common!( Action2OpenChannel, self,
     );
 
 	// channel ID validity
-    if cid.len() != CHANNEL_ID_SIZE || cid[0] == 0u8 || cid[CHANNEL_ID_SIZE-1] == 0u8 {
-        return Err(format!("channel id {} format error.", cid.to_hex()))
-    }
+    check_vaild_store_item_key("channel", cid.value(), CHANNEL_ID_SIZE) ? ;
+
     // check format
     if left_addr == right_addr {
         return Err("left address cannot equal with right address".to_string())

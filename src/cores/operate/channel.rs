@@ -17,6 +17,9 @@ pub fn close_channel_with_distribution(state: &mut dyn ChainState, channel_id: &
     left_sat: &Satoshi, right_sat: &Satoshi,
     is_final_closed: bool) -> Result<(), String> {
     // check
+    if paychan.status != CHANNEL_STATUS_OPENING {
+        return Err("channel status is not opening".to_string())
+    }
     let left_addr = &paychan.left_bill.address;
     let right_addr = &paychan.right_bill.address;
 	if left_amt.is_negative() || right_amt.is_negative() {

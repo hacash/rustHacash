@@ -23,9 +23,7 @@ impl_Action_trait_for_common!( Action9LockblsCreate, self,
     state, _trs, {
 
         // check
-        if self.lockbls_id.size() != LOCKBLS_ID_SIZE || self.lockbls_id[0] == 0 || self.lockbls_id[LOCKBLS_ID_SIZE-1] == 0 {
-            return Err("lockbls_id format error.".to_string())
-        }
+        check_vaild_store_item_key("lockbls", self.lockbls_id.value(), LOCKBLS_ID_SIZE) ? ;
         // is exists
         let hav = state.get_lockbls(&self.lockbls_id) ? ;
         if let Some(_) = hav {
@@ -52,5 +50,6 @@ impl_Action_trait_for_common!( Action9LockblsCreate, self,
             balance_amount: self.total_stock_amount.clone()
         };
         state.set_lockbls(&self.lockbls_id, &lockbls) // set lock amt
-});
+    }
+);
 
