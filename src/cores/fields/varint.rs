@@ -23,23 +23,52 @@ pub const UINT8_SIZE_VL: usize = 8;
 macro_rules! create_varint_struct_and_impl{
     ($tip:expr, $name:ident, $vty:ty, $size:expr, $size_vl:expr) => (
 
-#[derive(Hash, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)]
 pub struct $name {
     value: $vty,
 }
 
+impl fmt::Display for $name{
+    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f,"{}",self.value)
+    }
+}
+
+impl Deref for $name {
+    type Target = $vty;
+    fn deref(&self) -> &$vty {
+        &self.value
+    }
+}
+
+impl PartialEq<i32>  for $name {
+    #[inline]
+    fn eq(&self, other: &i32) -> bool {
+        self.value == *other as $vty
+    }
+}
+
 impl PartialOrd for $name {
+    #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
+impl PartialOrd<i32> for $name {
+    #[inline]
+    fn partial_cmp(&self, other: &i32) -> Option<Ordering> {
+        let v = *other as $vty;
+        Some(self.value.cmp(&v))
+    }
+}
+
 impl Ord for $name {
+    #[inline]
     fn cmp(&self, other: &Self) -> Ordering {
         self.value.cmp(&other.value)
     }
 }
-
 
 
 impl Add for $name {
@@ -47,6 +76,14 @@ impl Add for $name {
     #[inline]
     fn add(self, other: Self) -> Self {
         Self {value: self.value + other.value}
+    }
+}
+
+impl Add<i32> for $name {
+    type Output = Self;
+    #[inline]
+    fn add(self, other: i32) -> Self {
+        Self {value: self.value + (other as $vty)}
     }
 }
 
@@ -58,6 +95,15 @@ impl Sub for $name {
     }
 }
 
+impl Sub<i32> for $name {
+    type Output = Self;
+    #[inline]
+    fn sub(self, other: i32) -> Self {
+        Self {value: self.value - (other as $vty)}
+    }
+}
+
+
 impl Mul for $name {
     type Output = Self;
     #[inline]
@@ -66,11 +112,27 @@ impl Mul for $name {
     }
 }
 
+impl Mul<i32> for $name {
+    type Output = Self;
+    #[inline]
+    fn mul(self, other: i32) -> Self {
+        Self {value: self.value * other as $vty}
+    }
+}
+
 impl Div for $name {
     type Output = Self;
     #[inline]
     fn div(self, other: Self) -> Self {
         Self {value: self.value / other.value}
+    }
+}
+
+impl Div<i32> for $name {
+    type Output = Self;
+    #[inline]
+    fn div(self, other: i32) -> Self {
+        Self {value: self.value / other as $vty}
     }
 }
 

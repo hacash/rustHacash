@@ -39,7 +39,7 @@ pub_fn_hacash_operate_common!(hac_add, addr, amt, oldhac, {
 
 pub_fn_hacash_operate_common!(hac_sub, addr, amt, oldhac, {  
     // check
-    if oldhac.less_than( amt ) {
+    if oldhac < amt {
 		return Err(format!("do hac_sub error: address {} balance {} not enough, need {}", 
             addr.to_readable(), oldhac.to_fin_string(), amt.to_fin_string()))
     }
@@ -71,7 +71,7 @@ pub fn hac_check(state: &mut dyn ChainState, addr: &Address, amt: &Amount) -> Re
         return Err("check amount is cannot empty".to_string())
     }
     if let Some(bls) = state.get_balance( addr ) ? {
-        if bls.hacash.more_or_equal( amt ) {
+        if bls.hacash >= *amt {
             return Ok(bls.hacash)
         }
     }

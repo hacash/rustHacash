@@ -16,11 +16,15 @@ pub struct $class {
 
 impl $class {
 
-    pub fn new() -> $class {
-        $class {
-            count: <$county>::new(),
-            vlist: Vec::new(),
+    pub fn check(&self) -> Result<(), String> {
+        let setlen = self.count.get_value();
+        let reallen = self.vlist.len() as u64 ;
+        if setlen != reallen {
+            return Err(format!("{} check fail: length need {} but got {}.", 
+                stringify!($class), setlen, reallen))
         }
+        // success
+        Ok(())
     }
 
     pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, $class), String> {

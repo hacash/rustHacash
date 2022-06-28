@@ -36,9 +36,9 @@ pub_fn_satoshi_operate_common!(sat_add, addr, sat, oldsat, {
 
 pub_fn_satoshi_operate_common!(sat_sub, addr, sat, oldsat, {  
     // check
-    if oldsat.value() < sat.value() {
+    if oldsat < sat {
 		return Err(format!("do sat_sub error: address {} balance {} not enough, need {}", 
-            addr.to_readable(), oldsat.value(), sat.value()))
+            addr.to_readable(), oldsat, sat))
     }
     // do sub
     *oldsat - *sat
@@ -49,15 +49,13 @@ pub_fn_satoshi_operate_common!(sat_sub, addr, sat, oldsat, {
 /**************************** */
 
 
-pub fn sat_transfer(state: &mut dyn ChainState, addr_from: &Address, addr_to: &Address, amt: &Amount) -> Result<(), String> {
-	let is_trs_to_my_self = addr_from == addr_to;
-    if is_trs_to_my_self && state.pending_block_height().value() < 20_0000 {
-        // you can transfer it to yourself without changing the status, which is a waste of service fees
-		return Ok(()) 
+pub fn sat_transfer(state: &mut dyn ChainState, addr_from: &Address, addr_to: &Address, sat: &Satoshi) -> Result<(), String> {
+    if addr_from == addr_to {
+		return Err("cannot trs to self".to_string())
     }
 	// after 200000 height, the amount transferred to self is not allowed to be greater than the available balance!
-    hac_sub(state, addr_from, amt) ? ;
-    hac_add(state, addr_to, amt) ? ;
+    sat_sub(state, addr_from, sat) ? ;
+    sat_add(state, addr_to, sat) ? ;
     // ok
     Ok(())
 }
@@ -68,7 +66,7 @@ pub fn set_check(state: &mut dyn ChainState, addr: &Address, sat: &Satoshi) -> R
         return Err("check satoshi is cannot empty".to_string())
     }
     if let Some(bls) = state.get_balance( addr ) ? {
-        if bls.satoshi.value() >= sat.value() {
+        if bls.satoshi >= *sat {
             return Ok(bls.satoshi)
         }
     }

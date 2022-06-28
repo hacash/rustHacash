@@ -3,15 +3,34 @@
 macro_rules! create_fixedbytes_struct_and_impl{
     ($tip:expr, $name:ident, $size:expr) => (
 
-#[derive(Hash, Clone, PartialEq, Eq)]
+#[derive(Debug, Hash, Clone, PartialEq, Eq)]
 pub struct $name {
     bytes: [u8; $size],
+}
+
+impl fmt::Display for $name{
+    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f,"{}",self.describe())
+    }
 }
 
 impl Index<usize> for $name {
     type Output = u8;
     fn index(&self, idx: usize) -> &Self::Output {
         &self.bytes[idx]
+    }
+}
+
+impl IndexMut<usize> for $name {
+    fn index_mut(&mut self, idx: usize) -> &mut Self::Output{
+        &mut self.bytes[idx]
+    }
+}
+
+impl Deref for $name {
+    type Target = [u8; $size];
+    fn deref(&self) -> &[u8; $size] {
+        &self.bytes
     }
 }
 

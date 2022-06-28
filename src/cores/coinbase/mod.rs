@@ -10,7 +10,8 @@ use crate::x16rs;
 
 
 include!("channel_interest.rs");
-include!("diamond.rs");
+include!("diamond_create.rs");
+include!("satoshi_genesis.rs");
 
 
 

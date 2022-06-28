@@ -17,13 +17,13 @@ fn actions() {
         println!("print_action: {}", act.describe());
 
         let mut optr = ChainStateInstance::new();
-        _ = act.write_in_chain_state(&mut optr);
+        // _ = act.write_in_chain_state(&mut optr);
     }
 
     let act1 = Action1HacTrs::new();
 
     let mut optr = ChainStateInstance::new();
-    _ = act1.write_in_chain_state(&mut optr);
+    // _ = act1.write_in_chain_state(&mut optr);
 
     print_field(&act1);
     print_action(&act1);

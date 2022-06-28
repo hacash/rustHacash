@@ -1,4 +1,5 @@
 use hacash::cores::fields::*;
+use hacash::interface::*;
 
 /*
     cargo test --test amount -- --nocapture

@@ -18,6 +18,7 @@ pub struct ChainStateInstance {
 
     mode_debug_test: bool,
     mode_database_rebuild: bool,
+    mode_check_btcmove: bool, 
 
     basis_block: PenddingBasisBlock,
 
@@ -48,6 +49,7 @@ impl ChainStateInstance {
             id_key: ChainStateInstance::generate_id(),
             mode_debug_test: false,
             mode_database_rebuild: false,
+            mode_check_btcmove: false,
             basis_block: PenddingBasisBlock::Height(BlockHeight::from(0)),
             parent: None,
             childs: HashMap::new(),
@@ -93,6 +95,7 @@ impl ChainStateInstance {
             id_key: ChainStateInstance::generate_id(),
             mode_debug_test: bsstat.is_debug_test_mode(),
             mode_database_rebuild: bsstat.is_database_rebuild_mode(),
+            mode_check_btcmove: bsstat.is_check_btcmove(),
             basis_block: basis_block,
             leveldb: RefCell::new(tempdb),
             delkeys: HashMap::new(),

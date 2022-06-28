@@ -13,7 +13,7 @@ macro_rules! amount_check_data_len{
     )
 }
 
-#[derive(Clone)]
+#[derive(Clone, Eq)]
 pub struct Amount {
 	unit: u8,
 	dist: i8,
@@ -32,6 +32,50 @@ impl fmt::Debug for Amount {
         write!(f,"[unit:{}, dist:{}, byte: {:?}]", self.unit, self.dist, self.byte)
     }
 
+}
+
+
+impl PartialEq for Amount {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.equal(other)
+    }
+}
+
+impl Ord for Amount {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.equal(other) {
+            return Ordering::Equal
+        }
+        if self.more_than(other) {
+            return Ordering::Greater
+        }
+        return Ordering::Less
+    }
+}
+
+impl PartialOrd for Amount {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Mul<i32> for Amount {
+    type Output = Self;
+    fn mul(self, other: i32) -> Self {
+        let mut v = self.to_bigint();
+        v = v.mul(other);
+        Amount::from_bigint(&v).unwrap()
+    }
+}
+
+impl Div<i32> for Amount {
+    type Output = Self;
+    fn div(self, other: i32) -> Self {
+        let mut v = self.to_bigint();
+        v = v.div(other);
+        Amount::from_bigint(&v).unwrap()
+    }
 }
 
 
@@ -336,6 +380,34 @@ impl Amount {
 
 }
 
+
+pub trait CptMul<T> {
+    fn mul(&self, val: T) -> Result<Amount, String>;
+}
+impl CptMul<i32> for Amount {
+    fn mul(&self, val: i32) -> Result<Amount, String> {
+        self.mul_u64(val as u64)
+    }
+}
+impl CptMul<u64> for Amount {
+    fn mul(&self, val: u64) -> Result<Amount, String> {
+        self.mul_u64(val as u64)
+    }
+}
+pub trait CptDiv<T> {
+    fn div(&self, val: T) -> Result<Amount, String>;
+}
+impl CptDiv<i32> for Amount {
+    fn div(&self, val: i32) -> Result<Amount, String> {
+        self.div_u64(val as u64)
+    }
+}
+impl CptDiv<u64> for Amount {
+    fn div(&self, val: u64) -> Result<Amount, String> {
+        self.div_u64(val as u64)
+    }
+}
+
 // compute
 impl Amount {
 
@@ -354,6 +426,18 @@ impl Amount {
             panic!("cannot sub unit to negative number.");
         }
         self.unit -= v;
+    }
+
+    pub fn mul_u64(&self, val: u64) -> Result<Amount, String> {
+        let mut v = self.to_bigint();
+        v = v.mul(val);
+        Amount::from_bigint(&v)
+    }
+
+    pub fn div_u64(&self, val: u64) -> Result<Amount, String> {
+        let mut v = self.to_bigint();
+        v = v.div(val);
+        Amount::from_bigint(&v)
     }
 
     pub fn add(&self, amt: &Amount) -> Result<Amount, String> {
@@ -394,6 +478,7 @@ impl Amount {
         Ok(useamt)
     }
 }
+
 
 // compare 
 impl Amount {
@@ -458,8 +543,6 @@ impl Amount {
             _ => true,
         }
     }
-
-
 
 }
 

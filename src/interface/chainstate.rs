@@ -13,6 +13,7 @@ pub trait ChainStateRead {
 
     fn is_debug_test_mode(&self) -> bool { false } // is debug mode
     fn is_database_rebuild_mode(&self) -> bool { false } // is database rebuild mode
+    fn is_check_btcmove(&self) -> bool { false } // check btcmove log
 
     fn pending_block_height(&self) -> BlockHeight { BlockHeight::from_u64(0) }
     fn pending_block_hash(&self) -> Option<Hash> { None }

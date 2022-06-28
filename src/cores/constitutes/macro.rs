@@ -80,6 +80,17 @@ pub struct $class  {
 
 impl $class {
 
+    pub fn check(&self) -> Result<(), String> {
+        let setlen = self.$count.get_value();
+        let reallen = self.$value.len() as u64 ;
+        if setlen != reallen {
+            return Err(format!("{} check fail: length need {} but got {}.", 
+                stringify!($class), setlen, reallen))
+        }
+        // success
+        Ok(())
+    }
+
     pub fn get_count(&self) -> &$count_type {
         &self.$count
     }

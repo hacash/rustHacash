@@ -14,7 +14,7 @@ pub_struct_store_item_define_common!(SatoshiGenesisItem,
 	bitcoin_block_timestamp     , BlockTxTimestamp , 
 	bitcoin_effective_genesis   , Uint4            ,         
 	bitcoin_quantity            , Uint4            ,         
-	additional_total_hac_amount , Uint4            ,         
+	release_total_hac_mei       , Uint4            ,         
 	origin_address              , Address          ,          
 	bitcoin_transfer_hash       , Hash             ,             
 

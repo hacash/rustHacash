@@ -7,11 +7,23 @@ macro_rules! create_varfloat_struct_and_impl{
     ($tip:expr, $name:ident, $vty:ty, $size:expr) => (
 
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct $name {
     value: $vty,
 }
 
+impl fmt::Display for $name{
+    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f,"{}",self.value)
+    }
+}
+
+impl Deref for $name {
+    type Target = $vty;
+    fn deref(&self) -> &$vty {
+        &self.value
+    }
+}
 
 impl Add for $name {
     type Output = Self;

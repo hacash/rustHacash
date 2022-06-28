@@ -16,6 +16,9 @@ impl ChainStateRead for ChainStateInstance {
     fn is_database_rebuild_mode(&self) -> bool {
         self.mode_database_rebuild
     }
+    fn is_check_btcmove(&self) -> bool {
+        self.mode_check_btcmove
+    }
 
     fn pending_block_height(&self) -> BlockHeight { 
         match &self.basis_block {

@@ -227,6 +227,7 @@ impl Transaction for $class {
             }
         }
         // call actions
+        self.actions.check() ? ;
         for act in self.get_actions() {
             act.write_in_chain_state(state, self) ? ;
         }
