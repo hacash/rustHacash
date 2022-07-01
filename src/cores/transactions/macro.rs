@@ -8,16 +8,16 @@ macro_rules! transactions_type_define_parse_func_include{
         )+
 
         // parse func
-        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, Box<dyn Transaction>), String> {
+        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Transaction>, usize), String> {
             println!("----- transactions.parse start ------ {}", seek);
-            let (_, typev) = parse_move_seek_or_return_err!("transactions.parse", Uint1, buf, seek);
+            let (typev, _) = parse_move_seek_or_return_err!("transactions.parse", Uint1, buf, seek);
             let ty = typev.value() as u8;
             println!("----- transactions. typev.value()------ {} {}", seek, typev.value());
             match ty {
             $(
                 $trstype => {
-                    let (mvsk, trs) = <$class>::parse(buf, seek) ? ;
-                    Ok((mvsk, Box::new(trs)))
+                    let (trs, mvsk) = <$class>::parse(buf, seek) ? ;
+                    Ok((Box::new(trs), mvsk))
                 },
             )+
             _ => Err(format!("Transaction Type <{}> not find.", ty))
@@ -34,17 +34,17 @@ macro_rules! create_common_transaction_struct{
 
 pub struct $class {
 
-	ty: Uint1,
+	pub ty: Uint1,
 
-	timestamp: BlockTxTimestamp,
-	address: Address,
-	fee: Amount,
+	pub timestamp: BlockTxTimestamp,
+	pub address: Address,
+	pub fee: Amount,
 
-    actions: DynListActionMax65535,
+    pub actions: DynListActionMax65535,
 
-    signs: SignListMax65535,
+    pub signs: SignListMax65535,
 
-	multisign_mark: Uint2,
+	pub multisign_mark: Uint2,
 
 }
 

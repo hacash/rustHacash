@@ -16,6 +16,7 @@ include!("channel.rs");
 include!("satoshi_genesis.rs");
 include!("total_supply.rs");
 include!("transaction.rs");
+include!("block.rs");
 
 include!("lend_diamond.rs");
 include!("lend_bitcoin.rs");

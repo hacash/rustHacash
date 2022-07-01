@@ -27,11 +27,11 @@ impl $class {
         Ok(())
     }
 
-    pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, $class), String> {
+    pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<($class, usize), String> {
         let mut v = $class::new();
         let res = v.parse(buf, seek);
         match res {
-            Ok(seek) => Ok((seek, v)),
+            Ok(seek) => Ok((v, seek)),
             Err(e) => return Err(e),
         }
     }
@@ -72,7 +72,7 @@ impl Field for $class {
         sk = self.count.parse(buf, sk) ? ;
         self.vlist = Vec::new();
         for _ in 0..self.count.get_value() {
-            let(mvsk, obj) = $parseobjfunc(buf, sk) ? ;
+            let(obj, mvsk) = $parseobjfunc(buf, sk) ? ;
             sk = mvsk;
             self.vlist.push(obj);
         }

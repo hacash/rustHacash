@@ -2,62 +2,20 @@
 
 pub struct BlockV1 {
 
-	// head
-	version            : Uint1,
-	height             : BlockHeight,
-	timestamp          : BlockTxTimestamp,
-	prev_hash          : Hash,
-	mrkl_root          : Hash,
-	transaction_count  : Uint4,
-
-	// meta
-	nonce              : Fixedbytes4, // Mining random value
-	difficulty         : Uint4, // Target difficulty value
-	witness_stage      : Fixedbytes2, // Witness quantity level
+	// head meta
+    pub headmeta           : BlockHeadMeta,
 
 	// body
-	transactions       : Vec<Box<dyn Transaction>>
+	pub transactions       : Vec<Box<dyn Transaction>>
 
 }
 
 
 impl_Field_for_common_block!( BlockV1,
-	version            , Uint1,
-	height             , BlockHeight,
-	timestamp          , BlockTxTimestamp,
-	prev_hash          , Hash,
-	mrkl_root          , Hash,
-	transaction_count  , Uint4,
-	nonce              , Fixedbytes4, 
-	difficulty         , Uint4, 
-	witness_stage      , Fixedbytes2, 
-
+	headmeta            , BlockHeadMeta,
 );
 
 impl BlockV1 {
-
-    pub fn _serialize_head(&self) -> Vec<u8> {
-        field_serialize_items_concat!(
-            self.version,
-            self.height,
-            self.timestamp, 
-            self.prev_hash,
-            self.mrkl_root,
-            self.transaction_count
-        )
-    }
-
-    pub fn _serialize_head_meta(&self) -> Vec<u8> {
-        let mut head = self._serialize_head();
-        let mut meta = field_serialize_items_concat!(
-            self.nonce,
-            self.difficulty,
-            self.witness_stage
-        );
-        head.append(&mut meta);
-        head
-    }
-
 
     // parse function
     pub_fn_field_parse_wrap_return!(BlockV1, {BlockV1::new()});
@@ -65,12 +23,42 @@ impl BlockV1 {
 }
 
 
+fn mrkl_merge(list: Vec<Hash>) -> Vec<Hash> {
+    let num = list.len();
+    let mut res = vec![];
+    for i in 0..num{
+        let lh = list[i].to_vec();
+        let rh = match i+1 < num {
+            true => list[i+1].to_vec(),
+            false => lh.clone(),
+        };
+        let hx = x16rs::calculate_hash(vec![lh, rh].concat());
+        res.push(Hash::from(hx));
+    }
+    res
+}
+
 
 impl BlockRead for BlockV1 {
 
     fn hash(&self) -> Hash { 
-        panic!("")
+        let stuff = self.headmeta.serialize();
+        let hx = x16rs::block_hash(self.headmeta.head.height.value(), stuff);
+        Hash::from(hx)
     } 
+
+    fn mrklroot(&self) -> Hash {
+        let mut list = vec![];
+        for t in &self.transactions {
+            list.push(t.hash_with_fee())
+        }
+        loop {
+            if list.len() <= 1 {
+                return list[0].clone()
+            }
+            list = mrkl_merge(list);
+        }
+    }
 
     fn copy_block_ptr(&self) -> BlockPtr {
         BlockPtr{
@@ -80,47 +68,44 @@ impl BlockRead for BlockV1 {
     }
 
     fn copy_block_head(&self) -> BlockHead {
-        BlockHead{
-            version               : self.get_version().clone(),
-            height                : self.get_height().clone(),
-            timestamp             : self.get_timestamp().clone(),
-            prev_hash             : self.get_prev_hash().clone(),
-            mrkl_root             : self.get_mrkl_root().clone(),
-            transaction_count     : self.get_transaction_count().clone(),
-        }
+        self.headmeta.head.clone()
+    }
+
+    fn copy_block_headmeta(&self) -> BlockHeadMeta {
+        self.headmeta.clone()
     }
 
     /* */
 
 	fn get_version(&self) -> &Uint1 {
-        &self.version
+        &self.headmeta.head.version
     }
     fn get_height(&self) -> &BlockHeight {
-        &self.height
+        &self.headmeta.head.height
     }
 	fn get_timestamp(&self) -> &BlockTxTimestamp {
-        &self.timestamp
+        &self.headmeta.head.timestamp
     }
 	fn get_prev_hash(&self) -> &Hash {
-        &self.prev_hash
+        &self.headmeta.head.prev_hash
     }
 	fn get_mrkl_root(&self) -> &Hash {
-        &self.mrkl_root
+        &self.headmeta.head.mrkl_root
     }
     fn get_transaction_count(&self) -> &Uint4 {
-        &self.transaction_count
+        self.headmeta.get_transaction_count()
     }
 	fn get_difficulty(&self) -> u32 {
-        self.difficulty.value()
+        self.headmeta.meta.difficulty.value()
     }
 	fn get_nonce(&self) -> &Fixedbytes4 {
-        &self.nonce
+        &self.headmeta.meta.nonce
     }
 	fn get_nonce_num(&self) -> u32 {
         0
     }
     fn get_witness_stage(&self) -> &Fixedbytes2 {
-        &self.witness_stage
+        &self.headmeta.meta.witness_stage
     }
 	fn get_transactions(&self) -> &Vec<Box<dyn Transaction>> {
         &self.transactions
@@ -130,6 +115,11 @@ impl BlockRead for BlockV1 {
 }
 
 impl Block for BlockV1 {
+
+
+    fn set_mrkl_root(&mut self, root: &Hash) {
+        self.headmeta.head.mrkl_root = root.clone();
+    }
 
     fn verify_all_signs(&self) -> Result<(), String> {
         for act in self.get_transactions() {

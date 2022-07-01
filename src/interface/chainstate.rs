@@ -63,7 +63,7 @@ pub trait ChainStateOperate : ChainStateRead {
 define_chain_state_operation_of_common!(
     (
         1u8   , total_supply                               , TotalSupplyItem
-        2u8   , latest_blockhead                           , BlockHead
+        2u8   , latest_block_intro                         , BlockIntroItem
         3u8   , latest_diamond                             , DiamondSmeltItem
         
     ),(
@@ -113,7 +113,7 @@ pub trait ChainState : ChainStateOperate {
     fn append_child(&mut self, _: ArcMutexDynChainState) {}
 
 	// Start a sub state
-	// fn fork_with_next_block(&self, _: & dyn Block) -> Result<ArcMutexDynChainState, String> { Err(String::new()) }
+	fn fork_with_next_block(&mut self, _: & dyn Block) -> Result<ArcMutexDynChainState, String> { Err(String::new()) }
 	// fn fork_sub_child(&self) -> ArcMutexDynChainState;
     // fn fork_sub_child(_: ArcMutexDynChainState) -> ArcMutexDynChainState;
 

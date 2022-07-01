@@ -1,9 +1,21 @@
-// use hacash::interface::*;
-use hacash::cores::{coinbase::*, fields::Amount};
+use hex;
+use hacash::x16rs;
+use hacash::cores::{genesis, coinbase::*, fields::Amount};
 
 /*
     cargo test --test coinbase -- --nocapture
 */
+
+
+#[test]
+fn coinbase92792387459038450345() {
+    // let stuff = [0u8,0u8,0u8,0u8];
+    // println!("{}", hex::encode(x16rs::block_hash(12, stuff)));
+
+    genesis::genesis_block();
+    genesis::genesis_block();
+    genesis::genesis_block();
+}
 
 #[test]
 fn coinbases() {

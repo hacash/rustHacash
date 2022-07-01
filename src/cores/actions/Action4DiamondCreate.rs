@@ -105,6 +105,8 @@ impl_Action_trait_for_common!( Action4DiamondCreate, self,
         address: self.address.clone(),
     };
     state.set_diamond(&self.diamond, &diaitem) ? ;
+    // save diamond refer
+    state.set_diamond_refer(&self.number, &self.diamond) ? ;
     // gene
     let txbidfee = trs.get_fee();
     let visual_gene = coinbase::calculate_diamond_visual_gene(&self.number, &mediumhx, &diahx, &pending_block_hash, &txbidfee);

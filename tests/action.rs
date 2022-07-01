@@ -20,7 +20,7 @@ fn actions() {
         // _ = act.write_in_chain_state(&mut optr);
     }
 
-    let act1 = Action1HacTrs::new();
+    let act1 = Action1HacTransfer::new();
 
     let mut optr = ChainStateInstance::new();
     // _ = act1.write_in_chain_state(&mut optr);

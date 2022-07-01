@@ -17,6 +17,8 @@ actions_kind_define_parse_func_include!(
 
 
     ACTION_KIND_28 , 28 , Action28SatoshiFromTransfer                 ,
+    ACTION_KIND_29 , 29 , Action29SubmitTimeLimit                 ,
+    
     
     
 );

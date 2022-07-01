@@ -11,13 +11,13 @@ macro_rules! define_chain_state_operation_instance_of_common{
 impl ChainStateRead for ChainStateInstance {
 
     fn is_debug_test_mode(&self) -> bool {
-        self.mode_debug_test
+        self.config.mode_debug_test
     }
     fn is_database_rebuild_mode(&self) -> bool {
-        self.mode_database_rebuild
+        self.config.mode_database_rebuild
     }
     fn is_check_btcmove(&self) -> bool {
-        self.mode_check_btcmove
+        self.config.mode_check_btcmove
     }
 
     fn pending_block_height(&self) -> BlockHeight { 
@@ -41,7 +41,7 @@ impl ChainStateRead for ChainStateInstance {
         let has = self.leveldb.borrow_mut().get(&mkey);
         if let Some(dts) = has {
             // found
-            let (_, item) = $vtype1::parse(&dts, 0) ? ;
+            let (item, _) = $vtype1::parse(&dts, 0) ? ;
             return Ok(item)
         };
         let upstat = self.get_parent();
@@ -64,7 +64,7 @@ impl ChainStateRead for ChainStateInstance {
         let has = self.leveldb.borrow_mut().get(&mkey);
         if let Some(dts) = has {
             // found
-            let (_, item) = $vtype2::parse(&dts, 0) ? ;
+            let (item, _) = $vtype2::parse(&dts, 0) ? ;
             return Ok(Some(item))
         };
         let upstat = self.get_parent();
@@ -148,7 +148,7 @@ impl ChainStateOperate for ChainStateInstance {
 define_chain_state_operation_instance_of_common!(
     (
         1u8   , total_supply                               , TotalSupplyItem
-        2u8   , latest_blockhead                           , BlockHead
+        2u8   , latest_block_intro                         , BlockIntroItem
         3u8   , latest_diamond                             , DiamondSmeltItem
     ),(
         21u8  , tx_contain          , Hash                 , ContainTxItem

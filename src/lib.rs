@@ -6,3 +6,7 @@ pub mod x16rs;
 pub mod cores;
 
 pub mod chain;
+
+pub mod mint;
+
+

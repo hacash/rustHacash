@@ -15,17 +15,17 @@ pub struct Account {
 
 
 impl Account {
-    pub fn secret_key(&self) -> SecretKey {
-        self.secret_key
+    pub fn secret_key(&self) -> &SecretKey {
+        &self.secret_key
     }
-    pub fn public_key(&self) -> PublicKey {
-        self.public_key
+    pub fn public_key(&self) -> &PublicKey {
+        &self.public_key
     }
-    pub fn address(&self) -> Address {
-        self.address.clone()
+    pub fn address(&self) -> &Address {
+        &self.address
     }
-    pub fn readable(&self) -> String {
-        self.address_readable.clone()
+    pub fn readable(&self) -> &String {
+        &self.address_readable
     }
 }
 

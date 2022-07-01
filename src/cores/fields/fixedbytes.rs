@@ -10,7 +10,7 @@ pub struct $name {
 
 impl fmt::Display for $name{
     fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
-        write!(f,"{}",self.describe())
+        write!(f,"{}",self.to_hex())
     }
 }
 
@@ -72,6 +72,7 @@ impl ToHex for $name {
     }
 }
 
+
 impl $name {
 
     pub fn to_vec(&self) -> Vec<u8> {
@@ -101,6 +102,17 @@ impl $name {
     pub fn from( v: [u8; $size] ) -> $name {
         $name{
             bytes: v,
+        }
+    }
+
+    pub fn from_hex( v: &String ) -> Result<$name, String> {
+        let hhh = hex::decode(v);
+        match hhh {
+            Err(e) => Err(e.to_string()),
+            Ok(a) => match a.len() == $size {
+                true => Ok(<$name>::from(a.try_into().unwrap())),
+                false => Err("length error".to_string()),
+            }
         }
     }
 

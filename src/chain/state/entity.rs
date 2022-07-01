@@ -6,6 +6,11 @@ impl ChainState for ChainStateInstance {
         self.id_key
     }
 
+	// fn fork_with_next_block(&mut self, block: & dyn Block) -> Result<ArcMutexDynChainState, String> {
+    //     let base = Arc::new(Mutex::new(self));
+    //     ChainStateInstance::fork_with_next_block(base, block)
+    // }
+
 	fn get_parent(&self) -> Option<WeakArcMutexDynChainState> {
         self.parent.clone()
     }

@@ -231,9 +231,7 @@ impl Field for $name {
     }
 
     fn serialize(&self) -> Vec<u8> {
-        let bts = <$vty>::to_be_bytes(self.value);
-        let drop_zore = $size_vl - $size;
-        bts[drop_zore..].to_vec()
+        self.to_bytes().to_vec()
     }
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
@@ -304,6 +302,15 @@ impl $name {
         }
     }
 
+    pub fn to_bytes(&self) -> [u8; $size] {
+        let mut real = [0u8; $size];
+        let bts = <$vty>::to_be_bytes(self.value);
+        for x in 1..=$size {
+            real[$size-x] = bts[$size_vl-x];
+        }
+        real
+    }
+    
     pub fn value(&self) -> $vty {
         self.value
     }

@@ -79,6 +79,11 @@ impl Div<i32> for Amount {
 }
 
 
+impl fmt::Display for Amount{
+    fn fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f,"{}",self.to_fin_string())
+    }
+}
 
 // impl Copy for Amount {}
 

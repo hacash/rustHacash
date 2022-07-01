@@ -35,6 +35,9 @@ pub mod operate;
 #[macro_use]
 pub mod coinbase;
 
+#[macro_use]
+pub mod genesis;
+
 
 
 

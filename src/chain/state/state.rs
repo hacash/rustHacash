@@ -2,6 +2,24 @@
 
 static CHAIN_STATE_ID_KEY_AUTO: AtomicUsize = AtomicUsize::new(0);
 
+#[derive(Clone)]
+pub struct ChainStateConfig {
+    mode_debug_test: bool,
+    mode_database_rebuild: bool,
+    mode_check_btcmove: bool, 
+}
+
+impl ChainStateConfig {
+    pub fn new() -> ChainStateConfig {
+        ChainStateConfig{
+            mode_debug_test: false,
+            mode_database_rebuild: false,
+            mode_check_btcmove: false, 
+        }
+    }
+}
+
+
 
 enum PenddingBasisBlock {
     Height(BlockHeight),
@@ -9,16 +27,11 @@ enum PenddingBasisBlock {
 }
 
 
-
-
-
 pub struct ChainStateInstance {
 
     id_key: usize,
 
-    mode_debug_test: bool,
-    mode_database_rebuild: bool,
-    mode_check_btcmove: bool, 
+    config: ChainStateConfig,
 
     basis_block: PenddingBasisBlock,
 
@@ -47,9 +60,7 @@ impl ChainStateInstance {
     fn from_leveldb(db: DB) -> ChainStateInstance {
         ChainStateInstance{
             id_key: ChainStateInstance::generate_id(),
-            mode_debug_test: false,
-            mode_database_rebuild: false,
-            mode_check_btcmove: false,
+            config: ChainStateConfig::new(),
             basis_block: PenddingBasisBlock::Height(BlockHeight::from(0)),
             parent: None,
             childs: HashMap::new(),
@@ -79,7 +90,7 @@ impl ChainStateInstance {
     // fork
 
 
-	pub fn fork(base: &ArcMutexDynChainState) -> ChainStateInstance { 
+	pub fn fork(base: ArcMutexDynChainState) -> ChainStateInstance { 
         let opt = rusty_leveldb::in_memory();
         let tempdb = DB::open("childstate", opt).unwrap();
         let bsstat = base.lock().unwrap();
@@ -93,13 +104,15 @@ impl ChainStateInstance {
         };
         ChainStateInstance{
             id_key: ChainStateInstance::generate_id(),
-            mode_debug_test: bsstat.is_debug_test_mode(),
-            mode_database_rebuild: bsstat.is_database_rebuild_mode(),
-            mode_check_btcmove: bsstat.is_check_btcmove(),
+            config: ChainStateConfig{
+                mode_debug_test: bsstat.is_debug_test_mode(),
+                mode_database_rebuild: bsstat.is_database_rebuild_mode(),
+                mode_check_btcmove: bsstat.is_check_btcmove(),
+            },
             basis_block: basis_block,
             leveldb: RefCell::new(tempdb),
             delkeys: HashMap::new(),
-            parent: Some( Arc::downgrade(base) ),
+            parent: Some( Arc::downgrade(&base) ),
             childs: HashMap::new(),
         }
     }
@@ -109,13 +122,12 @@ impl ChainStateInstance {
     //     Arc::new(Mutex::new(ChainStateInstance::fork(base)))
     // }
 
-	pub fn fork_with_next_block(base: &ArcMutexDynChainState, newblock: & dyn Block) -> Result<ArcMutexDynChainState, String> { 
-        let mut child = ChainStateInstance::fork(&base);
+	pub fn fork_with_next_block(base: ArcMutexDynChainState, newblock: & dyn Block) -> Result<ArcMutexDynChainState, String> { 
+        let mut child = ChainStateInstance::fork(base.clone());
         // write state
         let _ = newblock.write_in_chain_state(&mut child) ? ;
         // set 
         child.basis_block = PenddingBasisBlock::Blkptr(newblock.copy_block_ptr());
-        child.parent = Some( Arc::downgrade(base) );
         let child_ptr = Arc::new(Mutex::new(child));
         let ptr2 = child_ptr.clone();
         base.lock().unwrap().append_child( child_ptr );

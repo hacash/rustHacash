@@ -21,11 +21,11 @@ macro_rules! parse_move_seek_or_return_err{
 #[macro_export] 
 macro_rules! pub_fn_field_parse_wrap_return{
     ($name:ty, $newcall:expr) => (
-        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, $name), String> {
+        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<($name, usize), String> {
             let mut v = $newcall;
             let res = v.parse(buf, seek);
             match res {
-                Ok(seek) => Ok((seek, v)),
+                Ok(seek) => Ok((v, seek)),
                 Err(e) => return Err(e),
             }
         }
@@ -152,7 +152,7 @@ impl Field for $class {
         let mut seek = self.$mark.parse(buf, seek) ? ;
         println!("impl_Field_trait_if_exist -- {} {}", seek, self.$mark.check());
         if self.$mark.check() {
-            let (mvsk, var) = <$value_type>::parse(buf, seek) ? ;
+            let (var, mvsk) = <$value_type>::parse(buf, seek) ? ;
             self.$value = Some(var);
             seek = mvsk
         }
@@ -218,7 +218,7 @@ impl Field for $class {
         self.$vec_list = Vec::new();
         for _ in 0..count {
             let obj: $value_type;
-            (seek, obj) = <$value_type>::parse(buf, seek) ? ;
+            (obj, seek) = <$value_type>::parse(buf, seek) ? ;
             self.$vec_list.push(obj);
         }
         Ok(seek)

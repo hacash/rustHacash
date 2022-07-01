@@ -6,5 +6,6 @@ use ripemd::{Ripemd160};
 include!("x16rs.rs");
 include!("hash.rs");
 include!("diamond.rs");
+include!("block.rs");
 
 

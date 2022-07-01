@@ -1,11 +1,11 @@
 
 pub struct TransactionCoinbase {
-    ty: Uint1,
-	address: Address,
-	reward: Amount,
-	message: StringTrim16,
+    pub ty: Uint1,
+	pub address: Address,
+	pub reward: Amount,
+	pub message: StringTrim16,
 
-    extend: CoinbaseExtend,
+    pub extend: CoinbaseExtend,
 
 }
 
@@ -24,6 +24,17 @@ impl_Field_trait_for_common!( 0, TransactionCoinbase,
 );
 
 impl TransactionRead for TransactionCoinbase {
+
+    fn hash(&self) -> Hash { 
+        self.hash_with_fee()
+    }
+    
+    fn hash_with_fee(&self) -> Hash {
+        let stuff = self.serialize();
+        let hx = x16rs::calculate_hash(stuff);
+        Hash::from(hx)
+    }
+
     
     fn get_type(&self) -> u8 {
         self.ty.value()

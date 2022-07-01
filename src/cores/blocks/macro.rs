@@ -8,16 +8,16 @@ macro_rules! block_version_define_parse_func_include{
         )+
 
         // parse func
-        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(usize, Box<dyn Block>), String> {
+        pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Block>, usize), String> {
             println!("--------------------------------{}", seek);
-            let (_, typev) = parse_move_seek_or_return_err!("blocks.parse", Uint1, buf, seek);
+            let (typev, _) = parse_move_seek_or_return_err!("blocks.parse", Uint1, buf, seek);
             let ty = typev.value() as u8;
             println!("-----{} {:?} {} {}", seek, buf[0], typev.value(), ty);
             match ty {
             $(
                 $version => {
-                    let (mvsk, block) = <$class>::parse(buf, seek) ? ;
-                    Ok((mvsk, Box::new(block)))
+                    let (block, mvsk) = <$class>::parse(buf, seek) ? ;
+                    Ok((Box::new(block), mvsk))
                 },
             )+
             _ => Err(format!("Block version <{}> not find.", ty))
@@ -96,7 +96,7 @@ impl Field for $blockname {
         // bts.push( self.nonce.serialize() );
         // bts.push( self.difficulty.serialize() );
         // bts.push( self.witness_stage.serialize() );
-        for i in 0..self.transaction_count.get_value() {
+        for i in 0..self.get_transaction_count().value() {
             let bt = self.transactions[i as usize].as_ref().serialize();
             bts.push(bt);
         }
@@ -120,11 +120,11 @@ impl Field for $blockname {
         // sk = self.difficulty.parse(buf, sk) ? ;
         // sk = self.witness_stage.parse(buf, sk) ? ;
         self.transactions = Vec::new();
-        let trsnum = self.transaction_count.get_value();
+        let trsnum = self.get_transaction_count().value();
         println!("--- self.transaction_count.get_value() {}", trsnum);
         for i in 0..trsnum {
             println!("--- +++ for _ in 0..trsnum iiiiiiiiiiiiiiiiiiiiiiiii {} {}", sk, i);
-            let(mvsk, obj) = transactions::parse(buf, sk) ? ;
+            let(obj, mvsk) = transactions::parse(buf, sk) ? ;
             println!("--- +++ for _ in 0..trsnum xxxxxxxxxxxxxxxxxxxxxxxxx {}", mvsk);
             sk = mvsk;
             self.transactions.push(obj);
@@ -147,7 +147,7 @@ impl Field for $blockname {
         // sznum += self.nonce.size();
         // sznum += self.difficulty.size();
         // sznum += self.witness_stage.size();
-        for i in 0..self.transaction_count.get_value() {
+        for i in 0..self.get_transaction_count().value() {
             sznum += self.transactions[i as usize].as_ref().size();
         }
         sznum
@@ -168,7 +168,7 @@ impl Field for $blockname {
         // items.push(format!("\"difficulty\":{}", self.difficulty.describe()));
         // items.push(format!("\"witness_stage\":{}", self.witness_stage.describe()));
         let mut trs = Vec::new();
-        let count = self.transaction_count.value() as usize;
+        let count = self.get_transaction_count().value() as usize;
         for i in 0..count {
             trs.push( self.transactions[i].describe() );
         }

@@ -32,7 +32,7 @@ impl Field for $name {
     }
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
-        let (seek, obj) = parse_move_seek_or_return_err!($tip, $lenty, buf, seek);
+        let (obj, seek) = parse_move_seek_or_return_err!($tip, $lenty, buf, seek);
         self.len = obj;
         let strlen = self.len.value() as usize;
         let seek2 = parse_move_seek_or_buf_too_short!($tip, seek, strlen, buf);

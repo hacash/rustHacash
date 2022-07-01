@@ -9,6 +9,7 @@ use crate::cores::storeitems::*;
 use crate::x16rs;
 
 
+include!("block_reward.rs");
 include!("channel_interest.rs");
 include!("diamond_create.rs");
 include!("satoshi_genesis.rs");

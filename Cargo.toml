@@ -11,6 +11,7 @@ cc = "1.0"
 
 [dependencies]
 chrono = "0.4.19"
+lazy_static = "1.4.0"
 hex = "0.4.3"
 num-traits = "0.2"
 num-bigint = "0.4.3"

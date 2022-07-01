@@ -2,9 +2,12 @@
 pub trait BlockRead : Field {
 
     fn hash(&self) -> Hash;
+    fn mrklroot(&self) -> Hash;
 
+    /* */
     fn copy_block_ptr(&self) -> BlockPtr;
     fn copy_block_head(&self) -> BlockHead;
+    fn copy_block_headmeta(&self) -> BlockHeadMeta;
 
     /* */
 
@@ -28,6 +31,10 @@ pub trait BlockRead : Field {
 
 
 pub trait Block : BlockRead {
+
+    fn set_mrkl_root(&mut self, _: &Hash) {
+        panic!("never call this!")
+    }
 
     fn verify_all_signs(&self) -> Result<(), String> {
         Err("".to_string())
