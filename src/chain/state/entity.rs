@@ -11,13 +11,6 @@ impl ChainState for ChainStateInstance {
     //     ChainStateInstance::fork_with_next_block(base, block)
     // }
 
-	fn get_parent(&self) -> Option<WeakArcMutexDynChainState> {
-        self.parent.clone()
-    }
-
-    fn append_child(&mut self, child: ArcMutexDynChainState) {
-        self.childs.insert(child.lock().unwrap().id(), child.clone());
-    }
 
     fn set_pending_block(&mut self, ptr: &BlockPtr) {
         self.basis_block = PenddingBasisBlock::Blkptr(ptr.clone());

@@ -48,6 +48,27 @@ impl PartialEq<i32>  for $name {
     }
 }
 
+impl PartialEq<u32>  for $name {
+    #[inline]
+    fn eq(&self, other: &u32) -> bool {
+        self.value == *other as $vty
+    }
+}
+
+impl PartialEq<i64>  for $name {
+    #[inline]
+    fn eq(&self, other: &i64) -> bool {
+        self.value == *other as $vty
+    }
+}
+
+impl PartialEq<u64>  for $name {
+    #[inline]
+    fn eq(&self, other: &u64) -> bool {
+        self.value == *other as $vty
+    }
+}
+
 impl PartialOrd for $name {
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -58,6 +79,30 @@ impl PartialOrd for $name {
 impl PartialOrd<i32> for $name {
     #[inline]
     fn partial_cmp(&self, other: &i32) -> Option<Ordering> {
+        let v = *other as $vty;
+        Some(self.value.cmp(&v))
+    }
+}
+
+impl PartialOrd<u32> for $name {
+    #[inline]
+    fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
+        let v = *other as $vty;
+        Some(self.value.cmp(&v))
+    }
+}
+
+impl PartialOrd<i64> for $name {
+    #[inline]
+    fn partial_cmp(&self, other: &i64) -> Option<Ordering> {
+        let v = *other as $vty;
+        Some(self.value.cmp(&v))
+    }
+}
+
+impl PartialOrd<u64> for $name {
+    #[inline]
+    fn partial_cmp(&self, other: &u64) -> Option<Ordering> {
         let v = *other as $vty;
         Some(self.value.cmp(&v))
     }

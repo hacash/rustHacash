@@ -1,16 +1,13 @@
 // convert
 
 fn uint32_to_big(v: u32) -> BigUint {
-
-    
-
-
-
+    panic!();
 }
 
 
 fn uint32_to_hash(v: u32) -> [u8; 32] {
     let diffbytes = u32::to_be_bytes(v);
+    panic!();
 
     
 
@@ -19,7 +16,7 @@ fn uint32_to_hash(v: u32) -> [u8; 32] {
 }
 
 
-
+/* 
 func bytes_to_bits(stuff: []) []byte {
 	results := make([]byte, 0, 32*8)
 	for _, v := range stuff {
@@ -27,7 +24,7 @@ func bytes_to_bits(stuff: []) []byte {
 	}
 	return results
 }
-
+*/
 
 // 256 to 32
 fn bits_to_byte(bits: [u8; 8]) -> u8 {

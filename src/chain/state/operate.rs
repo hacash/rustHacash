@@ -46,7 +46,6 @@ impl ChainStateRead for ChainStateInstance {
         };
         let upstat = self.get_parent();
         if let Some(p) = upstat {
-            // get from up parent state
             if let Some(p) = p.upgrade() {
                 return p.lock().unwrap().fn_get_1()
             }
@@ -69,7 +68,6 @@ impl ChainStateRead for ChainStateInstance {
         };
         let upstat = self.get_parent();
         if let Some(p) = upstat {
-            // get from up parent state
             if let Some(p) = p.upgrade() {
                 return p.lock().unwrap().fn_get($name2)
             }

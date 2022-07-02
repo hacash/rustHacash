@@ -1,11 +1,11 @@
 
 
-pub fn append_block_fork_state(basestate: ArcMutexDynChainState, buffer: &Vec<u8>, seek: usize) -> Result<(ArcMutexDynChainState, Box<dyn Block>, usize), String> {
+pub fn append_block_fork_state(basestate: ArcMutexChainStateInstance, buffer: &Vec<u8>, seek: usize) -> Result<(ArcMutexDynChainState, Box<dyn Block>, usize), String> {
     // unbox state
     let bastat = basestate.lock().unwrap();
     let latest_block = bastat.get_latest_block_intro() ? ;
     // parse block
-    let (newblock, seek) = blocks::parse(buffer, seek) ? ;
+    let (newblock, seek2) = blocks::parse(buffer, seek) ? ;
     let newblkhei = newblock.get_height().clone();
     let newblkhash = newblock.hash();
     let reterr = |e|{ Err(format!("try insert append new block height-{}, hx-{} to chain error: {}", newblkhei, newblkhash, e)) };
@@ -66,16 +66,50 @@ pub fn append_block_fork_state(basestate: ArcMutexDynChainState, buffer: &Vec<u8
         return reterr(format!("block coinbase reward need {} but got {}", rwdamt, rwdamt))
     }
     // difficulty
+    /*****************************/
+    // TODO:: CHECK HASH DIFFICULTY
+    /*****************************/
+    // signatures
+    newblock.verify_all_signs() ? ;
+    // tx type & time & size
+    let mut total_tx_size: usize = 0;
+    for i in 1..txlen { // over coinbase
+        let tx = &txs[i];
+        if tx.get_type() == TRANSACTION_TYPE_0_COINBASE {
+            return reterr("tx type error: cannot use repeat coinbase tx in block".to_string())
+        }
+        if *tx.get_timestamp() > timenowstamp {
+            let txtime = Utc.timestamp(tx.get_timestamp().value() as i64, 0);
+            return reterr(format!("tx {} timestamp {} is not more than now {}", tx.hash(), txtime.to_string(), timenow.to_string()))
+        }
+        total_tx_size += tx.size();
+    }
+    // size max
+	if total_tx_size > SINGLE_BLOCK_MAX_SIZE {
+		return Err(format!("txs total size {} is overflow max size {}.", total_tx_size, SINGLE_BLOCK_MAX_SIZE))
+	}
 
-
-
-
-
-
-
-    // fork
+    // fork & write_in_chain_state
     let newstate = ChainStateInstance::fork_with_next_block(basestate.clone(), newblock.as_ref()) ? ;
 
+    // block refer & bytes & status
+    let usestate = newstate.clone();
+    let mut usestate = usestate.lock().unwrap();
+    let usestate = usestate.deref_mut();
+    usestate.set_block_refer(&newblkhei, &newblkhash) ? ;
+    let blkbytes = BytesMax4294967295::from_bytes(buffer[seek..seek2].to_vec()).unwrap();
+    usestate.set_block_bytes(&newblkhash, &blkbytes) ? ;
+    // latest
+    let blkintro = BlockIntroItem {
+        hash: newblkhash,
+        headmeta: newblock.copy_block_headmeta(),
+    };
+    usestate.set_latest_block_intro(&blkintro) ? ;
+
+    // setup
+    if newblkhei == 1i32 {
+        state_setup(usestate);
+    }
     // insert success
     Ok((newstate, newblock, seek))
 }

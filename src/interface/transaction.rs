@@ -7,6 +7,7 @@ pub trait TransactionRead : Field {
     /* */
 
     fn get_type(&self) -> u8;
+    fn get_timestamp(&self) -> &BlockTxTimestamp { panic_never_call_this!() }
 	fn get_address(&self) -> &Address { panic_never_call_this!() }
     fn get_reward(&self) -> &Amount { panic_never_call_this!() }
 	fn get_signs(&self) -> &Vec<Sign> { panic_never_call_this!() }

@@ -26,6 +26,9 @@ enum PenddingBasisBlock {
     Blkptr(BlockPtr),
 }
 
+pub type ArcMutexChainStateInstance = Arc<Mutex<ChainStateInstance>>;
+pub type WeakArcMutexChainStateInstance = ArcWeak<Mutex<ChainStateInstance>>;
+
 
 pub struct ChainStateInstance {
 
@@ -38,13 +41,10 @@ pub struct ChainStateInstance {
     leveldb: RefCell<DB>,
     delkeys: HashMap<Vec<u8>, ()>,
 
-    parent: Option<WeakArcMutexDynChainState>,
-    childs: HashMap<usize, ArcMutexDynChainState>,
+    parent: Option<WeakArcMutexChainStateInstance>,
+    childs: HashMap<usize, ArcMutexChainStateInstance>,
 
 }
-
-
-
 
 impl ChainStateInstance {
 
@@ -90,7 +90,7 @@ impl ChainStateInstance {
     // fork
 
 
-	pub fn fork(base: ArcMutexDynChainState) -> ChainStateInstance { 
+	pub fn fork(base: ArcMutexChainStateInstance) -> ChainStateInstance { 
         let opt = rusty_leveldb::in_memory();
         let tempdb = DB::open("childstate", opt).unwrap();
         let bsstat = base.lock().unwrap();
@@ -122,17 +122,33 @@ impl ChainStateInstance {
     //     Arc::new(Mutex::new(ChainStateInstance::fork(base)))
     // }
 
-	pub fn fork_with_next_block(base: ArcMutexDynChainState, newblock: & dyn Block) -> Result<ArcMutexDynChainState, String> { 
+	pub fn fork_with_next_block(base: ArcMutexChainStateInstance, newblock: & dyn Block) -> Result<ArcMutexChainStateInstance, String> { 
         let mut child = ChainStateInstance::fork(base.clone());
+        child.basis_block = PenddingBasisBlock::Blkptr(newblock.copy_block_ptr());
         // write state
         let _ = newblock.write_in_chain_state(&mut child) ? ;
         // set 
-        child.basis_block = PenddingBasisBlock::Blkptr(newblock.copy_block_ptr());
         let child_ptr = Arc::new(Mutex::new(child));
         let ptr2 = child_ptr.clone();
         base.lock().unwrap().append_child( child_ptr );
         // ok
         Ok(ptr2)
+    }
+
+    fn append_child(&mut self, child: ArcMutexChainStateInstance) {
+        self.childs.insert(child.lock().unwrap().id(), child.clone());
+    }
+
+	fn get_parent(&self) -> Option<WeakArcMutexChainStateInstance> {
+        self.parent.clone()
+    }
+
+    // copy cover
+	fn traversal_copy(&mut self, sub: ArcMutexChainStateInstance) -> Result<(), String> {
+        
+
+
+        Ok(())
     }
 
     

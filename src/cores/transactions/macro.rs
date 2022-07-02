@@ -91,6 +91,10 @@ impl TransactionRead for $class {
         $tyid
     }
 
+    fn get_timestamp(&self) -> &BlockTxTimestamp { 
+        &self.timestamp
+    }
+
     fn get_address(&self) -> &Address {
         &self.address
     }

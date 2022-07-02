@@ -103,25 +103,25 @@ pub trait ChainState : ChainStateOperate {
     fn set_pending_block_height(&mut self, _: &BlockHeight);
 
 	// Judgment type
-	fn is_immutable(&self) -> bool { false }
+	// fn is_immutable(&self) -> bool { false }
 	// Save on disk
-	fn immutable_write_to_disk(&mut self) -> Result<(), String> { Ok(()) }
+	// fn immutable_write_to_disk(&mut self) -> Result<(), String> { Ok(()) }
 	// Get parent status
-	fn get_parent(&self) -> Option<WeakArcMutexDynChainState> { None }
+	// fn get_parent(&self) -> Option<Arc< &dyn ChainStateRead >> { None }
 	// Get all child States
 	// fn get_childs(&self) -> Vec<ArcMutexDynChainState> { vec![] }
-    fn append_child(&mut self, _: ArcMutexDynChainState) {}
+    // fn append_child(&mut self, _: ArcMutexDynChainState) {}
 
 	// Start a sub state
-	fn fork_with_next_block(&mut self, _: & dyn Block) -> Result<ArcMutexDynChainState, String> { Err(String::new()) }
+	// fn fork_with_next_block(&mut self, _: & dyn Block) -> Result<ArcMutexDynChainState, String> { Err(String::new()) }
 	// fn fork_sub_child(&self) -> ArcMutexDynChainState;
     // fn fork_sub_child(_: ArcMutexDynChainState) -> ArcMutexDynChainState;
 
     // copy cover
-	fn traversal_copy(&mut self, _: &ArcMutexDynChainState) -> Result<(), String> { Ok(()) }
+	// fn traversal_copy(&mut self, _: ArcMutexDynChainState) -> Result<(), String> { Ok(()) }
 
 	//GetReferBlock() (uint64, fields.Hash)
-	fn search_state_by_block_hash(&self, _: &Hash) -> Result<Option<ArcMutexDynChainState>, String> { Ok(None) }
+	// fn search_state_by_block_hash(&self, _: &Hash) -> Result<Option<ArcMutexDynChainState>, String> { Ok(None) }
 
 }
 
