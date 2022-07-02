@@ -38,7 +38,7 @@ pub struct ChainStateInstance {
 
     basis_block: PenddingBasisBlock,
 
-    memdb: MemDB,
+    leveldb: RefCell<DB>,
     delkeys: HashMap<Vec<u8>, ()>,
 
     parent: Option<WeakArcMutexChainStateInstance>,
@@ -57,25 +57,34 @@ impl ChainStateInstance {
         }
     }
 
-    fn from_db(db: MemDB) -> ChainStateInstance {
+    fn from_leveldb(db: DB) -> ChainStateInstance {
         ChainStateInstance{
             id_key: ChainStateInstance::generate_id(),
             config: ChainStateConfig::new(),
             basis_block: PenddingBasisBlock::Height(BlockHeight::from(0)),
             parent: None,
             childs: HashMap::new(),
-            memdb: db,
+            leveldb: RefCell::new(db),
             delkeys: HashMap::new(),
         }
     }
 
     pub fn new() -> ChainStateInstance {
 
-        let tempdb = MemDB::new();
+        let opt = rusty_leveldb::in_memory();
+        let tempdb = DB::open("state", opt).unwrap();
 
-        ChainStateInstance::from_db(tempdb)
+        ChainStateInstance::from_leveldb(tempdb)
     }
 
+
+    pub fn create_from_disk(datadir: &String) -> ChainStateInstance {
+
+        let opt = Options::default();
+        let diskdb = DB::open(datadir, opt).unwrap();
+
+        ChainStateInstance::from_leveldb(diskdb)
+    }
 
 
     pub fn destory(&mut self) {
@@ -88,7 +97,7 @@ impl ChainStateInstance {
 
 	pub fn fork(base: ArcMutexChainStateInstance) -> ChainStateInstance { 
         let opt = rusty_leveldb::in_memory();
-        let tempdb = MemDB::new();
+        let tempdb = DB::open("childstate", opt).unwrap();
         let bsstat = base.lock().unwrap();
         let basis_height = bsstat.pending_block_height();
         let basis_block = match bsstat.pending_block_hash() {
@@ -106,7 +115,7 @@ impl ChainStateInstance {
                 mode_check_btcmove: bsstat.is_check_btcmove(),
             },
             basis_block: basis_block,
-            memdb: tempdb,
+            leveldb: RefCell::new(tempdb),
             delkeys: HashMap::new(),
             parent: Some( Arc::downgrade(&base) ),
             childs: HashMap::new(),
@@ -151,10 +160,16 @@ impl ChainStateInstance {
 	pub fn traversal_copy(&mut self, sub: ArcMutexChainStateInstance) -> Result<(), String> {
         let sub = sub.lock().unwrap();
         // iter copy
-        let items = &sub.memdb.datamaps;
-        let mut basedb = &mut self.memdb;
-        for (k, v) in items {
-            basedb.put(k.clone(), v.clone()).unwrap();
+        let mut items = sub.leveldb.borrow_mut().new_iter().unwrap();
+        let mut basedb = self.leveldb.borrow_mut();
+        loop {
+            let item = items.next();
+            if let None = item {
+                break // end
+            }
+            let kv = item.unwrap();
+            // println!("traversal_copy - {}, {}", hex::encode(&kv.0), hex::encode(&kv.1));
+            basedb.put(&kv.0, &kv.1).unwrap();
         }
         basedb.flush().unwrap();
         // delete

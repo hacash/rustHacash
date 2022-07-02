@@ -31,7 +31,8 @@ fn main() {
     }
     let node = ins.unwrap();
     // start
-    let res = node.start(&blkurl);
+    // let res = node.start_request_all_blocks(&blkurl);
+    let res = node.read_some_data();
     if let Err(e) = res {
         panic!("{}", e)
     }

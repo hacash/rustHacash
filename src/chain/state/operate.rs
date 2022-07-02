@@ -38,7 +38,7 @@ impl ChainStateRead for ChainStateInstance {
     concat_idents!(fn_get_1 = get_, $name1 {
     fn fn_get_1(&self) -> Result<$vtype1, String> {
         let mkey = vec![$kfix1];
-        let has = self.memdb.get(&mkey);
+        let has = self.leveldb.borrow_mut().get(&mkey);
         if let Some(dts) = has {
             // found
             let (item, _) = $vtype1::parse(&dts, 0) ? ;
@@ -60,7 +60,7 @@ impl ChainStateRead for ChainStateInstance {
     concat_idents!(fn_get = get_, $name2 {
     fn fn_get(&self, $name2: &$keyty2) -> Result<Option<$vtype2>, String> {
         let mkey = ChainStateInstance::makey($kfix2, $name2.serialize());
-        let has = self.memdb.get(&mkey);
+        let has = self.leveldb.borrow_mut().get(&mkey);
         if let Some(dts) = has {
             // found
             let (item, _) = $vtype2::parse(&dts, 0) ? ;
@@ -89,7 +89,7 @@ impl ChainStateOperate for ChainStateInstance {
     fn fn_set(&mut self, item: &$vtype1) -> Result<(), String> {
         let mkey = vec![$kfix1];
         let vdts = item.serialize();
-        let putres = self.memdb.put(mkey, vdts);
+        let putres = self.leveldb.borrow_mut().put(&mkey, &vdts);
         match putres {
             Ok(_) => Ok(()),
             Err(e) => Err(e.to_string()),
@@ -99,7 +99,7 @@ impl ChainStateOperate for ChainStateInstance {
     concat_idents!(fn_del = del_, $name1 {
     fn fn_del(&mut self) -> Result<(), String> {
         let mkey = vec![$kfix1];
-        let delres = self.memdb.delete(&mkey);
+        let delres = self.leveldb.borrow_mut().delete(&mkey);
         self.mark_del_key(mkey); // mark del
         match delres {
             Ok(_) => Ok(()),
@@ -114,7 +114,7 @@ impl ChainStateOperate for ChainStateInstance {
     fn fn_set(&mut self, $name2: &$keyty2, item: &$vtype2) -> Result<(), String> {
         let mkey = ChainStateInstance::makey($kfix2, $name2.serialize());
         let vdts = item.serialize();
-        let putres = self.memdb.put(mkey, vdts);
+        let putres = self.leveldb.borrow_mut().put(&mkey, &vdts);
         match putres {
             Ok(_) => Ok(()),
             Err(e) => Err(e.to_string()),
@@ -124,7 +124,7 @@ impl ChainStateOperate for ChainStateInstance {
     concat_idents!(fn_del = del_, $name2 {
     fn fn_del(&mut self, $name2: &$keyty2) -> Result<(), String> {
         let mkey = ChainStateInstance::makey($kfix2, $name2.serialize());
-        let delres = self.memdb.delete(&mkey);
+        let delres = self.leveldb.borrow_mut().delete(&mkey);
         self.mark_del_key(mkey); // mark del
         match delres {
             Ok(_) => Ok(()),

@@ -18,7 +18,7 @@ use crate::cores::constitutes::*;
 use crate::cores::storeitems::*;
 
 
-// include!("memdb.rs");
+include!("memdb.rs");
 include!("state.rs");
 include!("entity.rs");
 include!("operate.rs");
