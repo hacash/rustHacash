@@ -13,6 +13,8 @@ Cargo.lock
 .vscode/
 
 
+test_dat*/
+
 *.out
 *.loc.h
 *.loc.c

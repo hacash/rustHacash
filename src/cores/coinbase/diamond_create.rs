@@ -22,7 +22,7 @@ pub fn calculate_diamond_visual_gene(number: &DiamondNumber, diamhash: &[u8;32],
     
     // start
     let dianum = number.value();
-    let mut genehexstr = [0u8; 20];
+    let mut genehexstr = [b'0'; 20];
     // cacl vgenehash
     let mut vgenehash = diamhash.clone();
     if dianum > DIAMOND_ABOVE_NUMBER_OF_VISUAL_GENE_APPEND_BLOCK_HASH {

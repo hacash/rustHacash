@@ -126,6 +126,8 @@ impl_Action_trait_for_common!( Action4DiamondCreate, self,
         visual_gene: visual_gene
     };
     state.set_diamond_smelt(&self.diamond, &diasmelt) ? ;
+    // set latest
+    state.set_latest_diamond(&diasmelt) ? ;
     // update total supply
     // burn fee
     if self.is_burning_90_persent_tx_fee() {

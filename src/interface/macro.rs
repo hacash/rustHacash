@@ -150,13 +150,13 @@ impl Field for $class {
 
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
         let mut seek = self.$mark.parse(buf, seek) ? ;
-        println!("impl_Field_trait_if_exist -- {} {}", seek, self.$mark.check());
+        // println!("impl_Field_trait_if_exist -- {} {}", seek, self.$mark.check());
         if self.$mark.check() {
             let (var, mvsk) = <$value_type>::parse(buf, seek) ? ;
             self.$value = Some(var);
             seek = mvsk
         }
-        println!("impl_Field_trait_if_exist end seek {}", seek);
+        // println!("impl_Field_trait_if_exist end seek {}", seek);
         Ok(seek)
     }
 

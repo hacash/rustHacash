@@ -42,13 +42,16 @@ impl<T: Clone + PartialOrd + FieldNumber, V: Clone + Field> Field for $class<T, 
         let ofstsk = seek - ofst;
         let mut $num_name: T = T::new();
         $num_name.parse(buf, ofstsk) ? ;
+        // println!("pub_type_prefix_value_check_impl_Field_trait: {}", $num_name.get_value());
         self.$num_name = $num_name.clone();
         if $over_check {
             let mut val: V = V::new();
-            let newseek = val.parse(buf, ofstsk) ? ;
+            let newseek = val.parse(buf, seek) ? ;
             self.field_val = Some(val);
+            // println!("$over_check newseek: {}", newseek);
             Ok(newseek)
         }else{
+            // println!("oldseek: {}", seek);
             Ok(seek)
         }
     }

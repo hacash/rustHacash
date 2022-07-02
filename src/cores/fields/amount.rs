@@ -111,7 +111,7 @@ impl Field for Amount {
         self.dist = buf[seek1] as i8;
         let seek3 = parse_move_seek_or_buf_too_short!("Amount", seek2, self.dist.abs() as usize, buf);
         self.byte = buf[seek2..seek3].to_vec();
-        println!("amount.parse : {} {} {} {}", seek1, seek2, seek3, self.byte[0]);
+        // println!("amount.parse : {} {} {} {}", seek1, seek2, seek3, self.byte[0]);
         amount_check_data_len!(self, "parse");
         Ok(seek3)
     }
@@ -307,12 +307,19 @@ impl Amount {
 
     pub fn from_bigint( bignum: &BigInt ) -> Result<Amount, String> {
         let numstr = bignum.to_string();
+        if numstr == "0" {
+            return Ok(Amount::new())
+        }
         let numuse = numstr.as_str().trim_end_matches('0');
         let unit = numstr.len() - numuse.len();
         if unit > 255 {
             return Err("Amount is too wide.".to_string())
         }
-        let biguse = BigInt::from_str_radix(&numuse, 10).unwrap();
+        let biguse = BigInt::from_str_radix(&numuse, 10);
+        if let Err(e) = biguse {
+            return Err(format!("BigInt::from_str_radix error: {} {} {} {}", numstr, numuse, numuse, e.to_string()))
+        }
+        let biguse = biguse.unwrap();
         let (sign, byte) = biguse.to_bytes_be();
         let dist = byte.len();
         if dist > 127 {
@@ -567,12 +574,12 @@ impl Amount {
         return self.is_empty() == false;
     }
 
-    // check must be negative and cannot be zero
+    // check must be positive and cannot be zero
     pub fn is_positive(&self) -> bool {
         if self.unit == 0 {
             return false
         }
-        if self.dist >= 0 {
+        if self.dist <= 0 {
             return false
         }
         // yes

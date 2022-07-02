@@ -9,10 +9,10 @@ macro_rules! block_version_define_parse_func_include{
 
         // parse func
         pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Block>, usize), String> {
-            println!("--------------------------------{}", seek);
+            // println!("--------------------------------{}", seek);
             let (typev, _) = parse_move_seek_or_return_err!("blocks.parse", Uint1, buf, seek);
             let ty = typev.value() as u8;
-            println!("-----{} {:?} {} {}", seek, buf[0], typev.value(), ty);
+            // println!("-----{} {:?} {} {}", seek, buf[0], typev.value(), ty);
             match ty {
             $(
                 $version => {
@@ -106,9 +106,9 @@ impl Field for $blockname {
     fn parse(&mut self, buf: &Vec<u8>, seek: usize) -> Result<usize, String> {
         let mut sk: usize = seek;
         $(
-            println!("----------- {} {} {}", stringify!($item), sk, buf[sk]);
+            // println!("----------- {} {} {}", stringify!($item), sk, buf[sk]);
             sk = self.$item.parse(buf, sk) ? ;
-            println!("-------next v  =  {} {}", buf[sk], buf[sk+1]);
+            // println!("-------next v  =  {} {}", buf[sk], buf[sk+1]);
         )+
         // sk = self.version.parse(buf, sk) ? ;
         // sk = self.height.parse(buf, sk) ? ;
@@ -121,15 +121,15 @@ impl Field for $blockname {
         // sk = self.witness_stage.parse(buf, sk) ? ;
         self.transactions = Vec::new();
         let trsnum = self.get_transaction_count().value();
-        println!("--- self.transaction_count.get_value() {}", trsnum);
+        // println!("--- self.transaction_count.get_value() {}", trsnum);
         for i in 0..trsnum {
-            println!("--- +++ for _ in 0..trsnum iiiiiiiiiiiiiiiiiiiiiiiii {} {}", sk, i);
+            // println!("--- +++ for _ in 0..trsnum iiiiiiiiiiiiiiiiiiiiiiiii {} {}", sk, i);
             let(obj, mvsk) = transactions::parse(buf, sk) ? ;
-            println!("--- +++ for _ in 0..trsnum xxxxxxxxxxxxxxxxxxxxxxxxx {}", mvsk);
+            // println!("--- +++ for _ in 0..trsnum xxxxxxxxxxxxxxxxxxxxxxxxx {}", mvsk);
             sk = mvsk;
             self.transactions.push(obj);
         }
-        println!("Ok(sk)Ok(sk)Ok(sk)Ok(sk)Ok(sk)Ok(sk)Ok(sk) {} ", sk);
+        // println!("Ok(sk)Ok(sk)Ok(sk)Ok(sk)Ok(sk)Ok(sk)Ok(sk) {} ", sk);
         Ok(sk)
     }
 

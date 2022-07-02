@@ -26,14 +26,19 @@ impl BlockV1 {
 fn mrkl_merge(list: Vec<Hash>) -> Vec<Hash> {
     let num = list.len();
     let mut res = vec![];
-    for i in 0..num{
-        let lh = list[i].to_vec();
-        let rh = match i+1 < num {
-            true => list[i+1].to_vec(),
+    let mut x = 0usize;
+    loop {
+        let lh = list[x].to_vec();
+        let rh = match x+1 < num {
+            true => list[x+1].to_vec(),
             false => lh.clone(),
         };
         let hx = x16rs::calculate_hash(vec![lh, rh].concat());
         res.push(Hash::from(hx));
+        x += 2;
+        if x >= num {
+            break
+        }
     }
     res
 }
@@ -53,6 +58,7 @@ impl BlockRead for BlockV1 {
             list.push(t.hash_with_fee())
         }
         loop {
+            // println!("mrklroot len={}", list.len());
             if list.len() <= 1 {
                 return list[0].clone()
             }
@@ -172,7 +178,9 @@ impl Block for BlockV1 {
         cbtx.write_in_chain_state(state) ? ;
         let cbaddr = cbtx.get_address();
         // send block fee
-        operate::hac_add(state, cbaddr, &fee_total_received) ? ;
+        if fee_total_received.is_positive() {
+            operate::hac_add(state, cbaddr, &fee_total_received) ? ;
+        }
         // update total supply
         if fee_total.not_equal(&fee_total_received) {
             let burnfee_blk = fee_total.sub(&fee_total_received) ? ;

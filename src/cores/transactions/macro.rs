@@ -9,10 +9,10 @@ macro_rules! transactions_type_define_parse_func_include{
 
         // parse func
         pub fn parse(buf: &Vec<u8>, seek: usize) -> Result<(Box<dyn Transaction>, usize), String> {
-            println!("----- transactions.parse start ------ {}", seek);
+            // println!("----- transactions.parse start ------ {}", seek);
             let (typev, _) = parse_move_seek_or_return_err!("transactions.parse", Uint1, buf, seek);
             let ty = typev.value() as u8;
-            println!("----- transactions. typev.value()------ {} {}", seek, typev.value());
+            // println!("----- transactions. typev.value()------ {} {}", seek, typev.value());
             match ty {
             $(
                 $trstype => {

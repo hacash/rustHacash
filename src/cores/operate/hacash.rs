@@ -5,7 +5,7 @@ macro_rules! pub_fn_hacash_operate_common{
 
 pub fn $func_name(state: &mut dyn ChainState, $addr: &Address, $amt: &Amount) -> Result<Amount, String> {
     if ! $amt.is_positive() {
-		return Err("amount value is not positive".to_string())
+		return Err(format!("amount {} value is not positive", $amt.to_fin_string()))
     }
     let mut userbls;
     if let Some(b) = state.get_balance( $addr ) ? {

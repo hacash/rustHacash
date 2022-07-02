@@ -69,6 +69,10 @@ impl Transaction for TransactionCoinbase {
         Ok(())
     }
 
+    fn verify_all_signs(&self) -> Result<(), String> { 
+        Ok(())
+    }
+
 }
 
 
