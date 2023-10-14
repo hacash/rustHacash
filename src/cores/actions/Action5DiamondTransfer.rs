@@ -1,7 +1,7 @@
 
 // create struct Action5DiamondTransfer
 action_create_struct_for_common_items!(
-    ACTION_KIND_2, Action5DiamondTransfer,
+    ACTION_KIND_5, Action5DiamondTransfer,
 
 	diamond          , DiamondName   , 
     to_address       , Address       ,
