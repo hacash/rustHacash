@@ -1,7 +1,7 @@
 
-// create struct Action7SatoshiGenesis
+// create struct Action34SatoshiGenesis
 action_create_struct_for_common_items!(
-    ACTION_KIND_7, Action7SatoshiGenesis,
+    ACTION_KIND_34, Action34SatoshiGenesis,
 
 	transfer_no                      , Uint4                  , // Transfer serial number
 	bitcoin_block_height             , Uint4                  , // Height of bitcoin block transferred
@@ -14,7 +14,7 @@ action_create_struct_for_common_items!(
 );
 
 
-impl_Action_trait_for_common_single!( Action7SatoshiGenesis, self, state, trs, {
+impl_Action_trait_for_common_single!( Action34SatoshiGenesis, self, state, trs, {
    
     let txactnum = trs.get_action_count().get_value();
     if txactnum > 1 {
@@ -42,7 +42,7 @@ impl_Action_trait_for_common_single!( Action7SatoshiGenesis, self, state, trs, {
             movelog.origin_address != self.origin_address || 
             movelog.bitcoin_transfer_hash != self.bitcoin_transfer_hash
          {
-			return Err("Action_7_SatoshiGenesis act and state.log() check act is mismatch.".to_string())
+			return Err("Action_34_SatoshiGenesis act and state.log() check act is mismatch.".to_string())
         }
         // check prev log
         if self.transfer_no > 1 {

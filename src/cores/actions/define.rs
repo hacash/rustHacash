@@ -6,7 +6,7 @@ actions_kind_define_parse_func_include!(
     ACTION_KIND_4  , 4  , Action4DiamondCreate                        ,
     ACTION_KIND_5  , 5  , Action5DiamondTransfer                      ,
     ACTION_KIND_6  , 6  , Action6DiamondMultipleTransfer              ,
-    ACTION_KIND_7  , 7  , Action7SatoshiGenesis                       ,
+    ACTION_KIND_7  , 7  , Action7DiamondMultipleTransfer              ,
     ACTION_KIND_8  , 8  , Action8SatoshiTransfer                      ,
     ACTION_KIND_9  , 9  , Action9LockblsCreate                        ,
     ACTION_KIND_10 , 10 , Action10LockblsRelease                      ,
@@ -17,8 +17,9 @@ actions_kind_define_parse_func_include!(
 
 
     ACTION_KIND_28 , 28 , Action28SatoshiFromTransfer                 ,
-    ACTION_KIND_29 , 29 , Action29SubmitTimeLimit                 ,
-    
+    ACTION_KIND_29 , 29 , Action29SubmitTimeLimit                     ,
+
+    ACTION_KIND_34  , 34  , Action34SatoshiGenesis                    ,
     
     
 );
